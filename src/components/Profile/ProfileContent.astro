@@ -1,0 +1,157 @@
+---
+import { profileData } from '../../data/profile';
+---
+
+<div class="space-y-6">
+  <!-- Header Section -->
+  <div class="flex flex-col items-center gap-4">
+    <img 
+      src="public/assets/profile.jpg" 
+      alt="Profile Picture" 
+      class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-ubuntu-orange object-cover transition-transform duration-300 hover:scale-105"
+    />
+    <div class="text-center">
+      <h2 class="text-xl md:text-2xl font-bold mb-3">{profileData.name}</h2>
+      <div class="space-y-1 text-sm">
+        <p>
+          <strong class="text-ubuntu-orange">Carne:</strong> {profileData.carne}
+        </p>
+        <p>
+          <strong class="text-ubuntu-orange">Correo:</strong> 
+          <a href={`mailto:${profileData.email}`} class="text-blue-400 hover:text-blue-300 transition-colors">
+            {profileData.email}
+          </a>
+        </p>
+        <p>
+          <strong class="text-ubuntu-orange">Curso:</strong> {profileData.course}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description Section -->
+  <div class="profile-section">
+    <h3 class="section-title">
+      <span class="title-icon">📝</span>
+      Descripción
+    </h3>
+    <div class="section-content">
+      {profileData.description.map((desc, index) => (
+        <p class={`description-item description-item-${index}`}>{desc}</p>
+      ))}
+    </div>
+  </div>
+
+  <!-- Skills Section -->
+  <div class="profile-section">
+    <h3 class="section-title">
+      <span class="title-icon">💻</span>
+      Habilidades Técnicas
+    </h3>
+    <div class="section-content">
+      <div class="skills-grid">
+        {profileData.skills.map((skill, index) => (
+          <span class={`skill-tag skill-${index}`}>
+            <span class="skill-icon">{skill.icon}</span>
+            {skill.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Soft Skills Section -->
+  <div class="profile-section">
+    <h3 class="section-title">
+      <span class="title-icon">🤝</span>
+      Habilidades Blandas
+    </h3>
+    <div class="section-content">
+      <div class="skills-grid">
+        {profileData.softSkills.map((skill, index) => (
+          <span class={`soft-skill-tag soft-skill-${index}`}>
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .profile-section {
+    @apply bg-white/5 rounded-lg p-4 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-ubuntu-orange/30;
+  }
+
+  .section-title {
+    @apply flex items-center gap-2 text-ubuntu-orange text-lg font-semibold mb-3 pb-2 border-b border-white/20;
+  }
+
+  .title-icon {
+    @apply text-xl;
+  }
+
+  .section-content {
+    @apply space-y-2;
+  }
+
+  .description-item {
+    @apply text-gray-200 leading-relaxed opacity-0 translate-y-2 transition-all duration-500;
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .description-item-1 {
+    animation-delay: 0.1s;
+  }
+
+  .description-item-2 {
+    animation-delay: 0.2s;
+  }
+
+  .skills-grid {
+    @apply grid grid-cols-2 md:grid-cols-3 gap-2;
+  }
+
+  .skill-tag, .soft-skill-tag {
+    @apply bg-ubuntu-orange/20 text-white px-3 py-1 rounded-full text-sm border border-ubuntu-orange/30 transition-all duration-300 hover:bg-ubuntu-orange/40 hover:scale-105 cursor-pointer opacity-0 translate-y-2 flex items-center gap-2;
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+
+  .skill-icon {
+    @apply text-base;
+  }
+
+  .skill-tag:hover, .soft-skill-tag:hover {
+    @apply shadow-lg shadow-ubuntu-orange/20;
+  }
+
+  /* Staggered animation delays for skills */
+  .skill-0 { animation-delay: 0.1s; }
+  .skill-1 { animation-delay: 0.15s; }
+  .skill-2 { animation-delay: 0.2s; }
+  .skill-3 { animation-delay: 0.25s; }
+  .skill-4 { animation-delay: 0.3s; }
+  .skill-5 { animation-delay: 0.35s; }
+  .skill-6 { animation-delay: 0.4s; }
+  .skill-7 { animation-delay: 0.45s; }
+  .skill-8 { animation-delay: 0.5s; }
+  .skill-9 { animation-delay: 0.55s; }
+  .skill-10 { animation-delay: 0.6s; }
+  .skill-11 { animation-delay: 0.65s; }
+
+  .soft-skill-0 { animation-delay: 0.1s; }
+  .soft-skill-1 { animation-delay: 0.15s; }
+  .soft-skill-2 { animation-delay: 0.2s; }
+  .soft-skill-3 { animation-delay: 0.25s; }
+  .soft-skill-4 { animation-delay: 0.3s; }
+  .soft-skill-5 { animation-delay: 0.35s; }
+  .soft-skill-6 { animation-delay: 0.4s; }
+  .soft-skill-7 { animation-delay: 0.45s; }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

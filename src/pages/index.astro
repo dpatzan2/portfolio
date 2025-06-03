@@ -1,0 +1,17 @@
+---
+import "../styles/global.css";
+import Layout from '../layouts/Layout.astro';
+import TopPanel from "../components/Deskop/TopPanel.astro";
+import Dock from "../components/Deskop/Dock.astro";
+import WindowsContainer from "../components/Deskop/WindowsContainer.astro";
+
+---
+
+
+<Layout title="Diego Patzán - 23525">
+  <div class="h-screen bg-ubuntu-desktop bg-cover bg-center relative">
+    <TopPanel />
+    <Dock />
+    <WindowsContainer />
+  </div>
+</Layout>

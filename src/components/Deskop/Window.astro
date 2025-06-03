@@ -1,0 +1,25 @@
+---
+
+export interface Props {
+  title: string;
+  class?: string;
+}
+
+const { title, class: className = "" } = Astro.props;
+---
+
+<div class={`bg-ubuntu-window rounded-lg overflow-hidden shadow-2xl border border-white/10 h-full ${className}`}>
+  <div class="bg-ubuntu-header p-2 flex items-center justify-between border-b border-white/10">
+    <div class="text-white text-sm ml-8">
+      {title}
+    </div>
+    <div class="flex gap-2">
+      <button class="w-4 h-4 rounded-full bg-yellow-500 hover:bg-yellow-400 transition-colors"></button>
+      <button class="w-4 h-4 rounded-full bg-green-500 hover:bg-green-400 transition-colors"></button>
+      <button class="w-4 h-4 rounded-full bg-red-500 hover:bg-red-400 transition-colors"></button>
+    </div>
+  </div>
+  <div class="p-5 text-white h-full overflow-y-auto" style="height: calc(100% - 37px);">
+    <slot />
+  </div>
+</div>

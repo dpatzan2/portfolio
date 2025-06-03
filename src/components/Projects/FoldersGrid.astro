@@ -1,0 +1,27 @@
+---
+import { projectsData } from '../../data/projects';
+---
+
+<div id="folders-view" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  {projectsData.folders.map((folder) => (
+    <div 
+      class="group flex flex-col items-center p-4 rounded-lg hover:bg-white/10 cursor-pointer transition-all duration-200 relative hover:scale-105"
+      data-folder-id={folder.id}
+      data-folder-name={folder.name}
+    >
+      <div class="relative mb-2">
+        <svg width="80" height="80" viewBox="0 0 80 80" class="w-16 h-16 md:w-20 md:h-20">
+          <path d="M10 20 Q10 15 15 15 L30 15 L35 10 Q35 10 40 10 L65 10 Q70 10 70 15 L70 60 Q70 65 65 65 L15 65 Q10 65 10 60 Z" 
+                fill="#FFA500" 
+                stroke="#FF8C00" 
+                stroke-width="1"/>
+          <path d="M10 25 Q10 20 15 20 L65 20 Q70 20 70 25 L70 60 Q70 65 65 65 L15 65 Q10 65 10 60 Z" 
+                fill="#FFB84D"/>
+        </svg>
+        <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl">{folder.icon}</span>
+      </div>
+      <div class="text-sm text-center text-gray-100 font-medium">{folder.name}</div>
+      <div class="text-xs text-gray-400 mt-1">{folder.items.length} items</div>
+    </div>
+  ))}
+</div>

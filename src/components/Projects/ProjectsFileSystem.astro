@@ -1,0 +1,312 @@
+---
+import FileSystemToolbar from './FileSystemToolbar.astro';
+import FoldersGrid from './FoldersGrid.astro';
+import PreviewModal from './PreviewModal.astro';
+import StatusBar from './StatusBar.astro';
+---
+
+<div class="h-full flex flex-col bg-ubuntu-window">
+  <!-- Toolbar -->
+  <FileSystemToolbar />
+
+  <!-- Main content area -->
+  <div id="file-content" class="flex-1 overflow-auto p-4">
+    <!-- Folders View (Initial) -->
+    <FoldersGrid />
+
+    <!-- Files View (Hidden initially) -->
+    <div id="files-view" class="hidden">
+      <!-- Content will be dynamically inserted -->
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <PreviewModal />
+
+  <!-- Status bar -->
+  <StatusBar />
+</div>
+
+<!-- Estilos que no se pueden hacer con Tailwind -->
+<style>
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(20px) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  [data-file-cursor]:hover {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%23FFA500" d="M16 2l-2 6h-6l5 4-2 6 5-4 5 4-2-6 5-4h-6z"/></svg>') 16 16, pointer;
+  }
+
+  .shine-effect::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-300;
+    transform: translateX(-100%) translateY(-100%);
+  }
+  
+  .shine-effect:hover::before {
+    @apply opacity-100;
+    animation: shine 0.5s ease-out;
+  }
+
+  @keyframes shine {
+    to {
+      transform: translateX(100%) translateY(100%);
+    }
+  }
+
+  .file-enter {
+    animation: fileSlideIn 0.3s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fileSlideIn {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .file-enter:nth-child(1) { animation-delay: 0.05s; }
+  .file-enter:nth-child(2) { animation-delay: 0.1s; }
+  .file-enter:nth-child(3) { animation-delay: 0.15s; }
+  .file-enter:nth-child(4) { animation-delay: 0.2s; }
+  .file-enter:nth-child(5) { animation-delay: 0.25s; }
+</style>
+
+<script>
+  import { projectsData } from '../../data/projects';
+  import type { ProjectItem, ProjectFolder } from '../../data/projects';
+  import { renderGridView, renderListView, getStatusClass } from '../../utils/fileSystemUtils';
+
+  let currentFolder: string | null = null;
+  let viewMode: 'grid' | 'list' = 'grid';
+  let selectedFile: ProjectItem | null = null;
+
+  const foldersView = document.getElementById('folders-view');
+  const filesView = document.getElementById('files-view');
+  const backBtn = document.getElementById('back-btn') as HTMLButtonElement;
+  const homeBtn = document.getElementById('home-btn');
+  const breadcrumb = document.getElementById('current-path');
+  const statusText = document.getElementById('status-text');
+  const viewGridBtn = document.getElementById('view-grid');
+  const viewListBtn = document.getElementById('view-list');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('preview-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  });
+
+  function showFolderContents(folderId: string) {
+    const folder = projectsData.folders.find(f => f.id === folderId);
+    if (!folder) return;
+
+    currentFolder = folderId;
+    
+    if (breadcrumb) {
+      breadcrumb.innerHTML = ` <span class="text-gray-500">›</span> <span>${folder.name}</span>`;
+    }
+
+    foldersView?.classList.add('hidden');
+    filesView?.classList.remove('hidden');
+    
+    backBtn.disabled = false;
+
+    if (filesView) {
+      filesView.innerHTML = viewMode === 'grid' ? renderGridView(folder.items) : renderListView(folder.items);
+    }
+
+    if (statusText) {
+      statusText.textContent = `${folder.items.length} items`;
+    }
+
+    attachFileHandlers();
+  }
+
+  function showPreview(item: ProjectItem) {
+    selectedFile = item;
+    const modal = document.getElementById('preview-modal');
+    const title = document.getElementById('preview-title');
+    const image = document.getElementById('preview-image') as HTMLImageElement;
+    const description = document.getElementById('preview-description');
+    const technologies = document.getElementById('preview-technologies');
+    const status = document.getElementById('preview-status');
+    const githubBtn = document.getElementById('github-btn');
+
+    if (title) title.textContent = item.name;
+    
+    if (image && item.preview) {
+      image.src = item.preview;
+      image.alt = item.name;
+    } else if (image) {
+      image.src = `/assets/previews/default-${item.type}.png`;
+    }
+
+    if (description && item.description) {
+      description.textContent = item.description.join(' ');
+    }
+
+    if (technologies && item.technologies) {
+      technologies.innerHTML = item.technologies.map(tech => 
+        `<span class="px-2 py-1 bg-white/10 text-gray-300 text-xs rounded-full">${tech}</span>`
+      ).join('');
+    }
+
+    if (status) {
+      status.textContent = item.status;
+      status.className = `ml-2 px-2 py-1 rounded-full text-xs ${getStatusClass(item.status)}`;
+    }
+
+    // Show/hide GitHub button based on githubLink availability
+    if (githubBtn) {
+      if (item.githubLink) {
+        githubBtn.classList.remove('hidden');
+      } else {
+        githubBtn.classList.add('hidden');
+      }
+    }
+
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+  }
+
+  function goHome() {
+    currentFolder = null;
+    foldersView?.classList.remove('hidden');
+    filesView?.classList.add('hidden');
+    backBtn.disabled = true;
+    
+    if (breadcrumb) {
+      breadcrumb.innerHTML = '';
+    }
+    
+    if (statusText) {
+      statusText.textContent = '3 folders';
+    }
+  }
+
+  function attachFileHandlers() {
+    document.querySelectorAll('[data-file-id]').forEach(file => {
+      file.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const itemData = file.getAttribute('data-preview');
+        if (itemData) {
+          try {
+            const item = JSON.parse(itemData);
+            showPreview(item);
+          } catch (error) {
+            console.error('Error parsing item data:', error);
+          }
+        }
+      });
+
+      file.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        const link = file.getAttribute('data-link');
+        const target = file.getAttribute('data-target');
+        if (link) {
+          window.open(link, target || '_blank');
+        }
+      });
+    });
+  }
+
+
+  document.querySelectorAll('[data-folder-id]').forEach(folder => {
+    folder.addEventListener('dblclick', () => {
+      const folderId = folder.getAttribute('data-folder-id');
+      if (folderId) showFolderContents(folderId);
+    });
+  });
+
+  backBtn?.addEventListener('click', goHome);
+  homeBtn?.addEventListener('click', goHome);
+
+  viewGridBtn?.addEventListener('click', () => {
+    viewMode = 'grid';
+    viewGridBtn.classList.add('bg-white/20', 'text-white');
+    viewGridBtn.classList.remove('hover:bg-white/10');
+    viewListBtn?.classList.remove('bg-white/20', 'text-white');
+    viewListBtn?.classList.add('hover:bg-white/10');
+    if (currentFolder) showFolderContents(currentFolder);
+  });
+
+  viewListBtn?.addEventListener('click', () => {
+    viewMode = 'list';
+    viewListBtn.classList.add('bg-white/20', 'text-white');
+    viewListBtn.classList.remove('hover:bg-white/10');
+    viewGridBtn?.classList.remove('bg-white/20', 'text-white');
+    viewGridBtn?.classList.add('hover:bg-white/10');
+    if (currentFolder) showFolderContents(currentFolder);
+  });
+
+  document.getElementById('close-preview')?.addEventListener('click', () => {
+    const modal = document.getElementById('preview-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  });
+
+  document.getElementById('open-project')?.addEventListener('click', () => {
+    if (selectedFile && selectedFile.link) {
+      window.open(selectedFile.link, selectedFile.target || '_blank');
+    }
+  });
+
+  document.getElementById('github-btn')?.addEventListener('click', () => {
+    if (selectedFile && selectedFile.githubLink) {
+      window.open(selectedFile.githubLink, '_blank');
+    }
+  });
+
+  document.getElementById('preview-modal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      const modal = e.currentTarget as HTMLElement;
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('preview-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const item = target.closest('[data-folder-id], [data-file-id]');
+    
+    if (item && !e.ctrlKey && !e.metaKey) {
+      document.querySelectorAll('.border-ubuntu-orange').forEach(el => {
+        el.classList.remove('bg-ubuntu-orange/30', 'border-2', 'border-ubuntu-orange', 'shadow-[0_0_20px_rgba(255,165,0,0.3)]');
+      });
+      item.classList.add('bg-ubuntu-orange/30', 'border-2', 'border-ubuntu-orange', 'shadow-[0_0_20px_rgba(255,165,0,0.3)]');
+    } else if (item && (e.ctrlKey || e.metaKey)) {
+      item.classList.toggle('bg-ubuntu-orange/30');
+      item.classList.toggle('border-2');
+      item.classList.toggle('border-ubuntu-orange');
+      item.classList.toggle('shadow-[0_0_20px_rgba(255,165,0,0.3)]');
+    }
+  });
+</script>
