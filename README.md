@@ -1,47 +1,42 @@
-# Astro Starter Kit: Minimal
+# Proyecto portafolio - Diego Fernando Patzán Marroquín
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Portafolio personal desarrollado con Astro, este proyecto muestra mis trabajos, proyectos personales y casos de estudio de UX/UI, ver portafolio en linea: [Portafolio](https://23525.dernait.my/).
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## 🚀 Estructura del Proyecto
 
 ```text
 /
 ├── public/
+│   └── assets/          # Imágenes y recursos estáticos
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── components/
+│   │   └── Deskop/      # Componentes del escritorio
+│   ├── data/            # Datos de proyectos y perfil
+│   ├── layouts/         # Layout principal
+│   ├── pages/           # Páginas de la aplicación
+│   └── styles/          # Estilos globales
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🛠️ Tecnologías Utilizadas
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- **Astro**: Framework principal
+- **TailwindCSS**: Estilos y diseño responsive
+- **TypeScript**: Tipado estático
+- **Ubuntu Fonts**: Fuente oficial de Ubuntu para mayor autenticidad
 
-Any static assets, like images, can be placed in the `public/` directory.
+## 🧞 Comandos
 
-## 🧞 Commands
+Todos los comandos se ejecutan desde la raíz del proyecto:
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
+| Comando                   | Acción                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm install`             | Instala las dependencias                         |
+| `npm run dev`             | Inicia servidor de desarrollo en `localhost:4321` |
+| `npm run build`           | Construye el sitio para producción en `./dist/`  |
+| `npm run preview`         | Previsualiza la build localmente                |
+| `npm run astro ...`       | Ejecuta comandos CLI de Astro                   |
 
-## 👀 Want to learn more?
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+

@@ -9,15 +9,12 @@ import StatusBar from './StatusBar.astro';
   <!-- Toolbar -->
   <FileSystemToolbar />
 
-  <!-- Main content area -->
   <div id="file-content" class="flex-1 overflow-auto p-4">
-    <!-- Folders View (Initial) -->
+
     <FoldersGrid />
 
-    <!-- Files View (Hidden initially) -->
-    <div id="files-view" class="hidden">
-      <!-- Content will be dynamically inserted -->
-    </div>
+    <!-- Folders view -->
+    <div id="files-view" class="hidden"></div>
   </div>
 
   <!-- Preview Modal -->
@@ -27,7 +24,7 @@ import StatusBar from './StatusBar.astro';
   <StatusBar />
 </div>
 
-<!-- Estilos que no se pueden hacer con Tailwind -->
+
 <style>
   @keyframes modalSlideIn {
     from {
@@ -170,7 +167,6 @@ import StatusBar from './StatusBar.astro';
       status.className = `ml-2 px-2 py-1 rounded-full text-xs ${getStatusClass(item.status)}`;
     }
 
-    // Show/hide GitHub button based on githubLink availability
     if (githubBtn) {
       if (item.githubLink) {
         githubBtn.classList.remove('hidden');

@@ -325,7 +325,7 @@ export const projectsData: ProjectsData = {
           technologies: ['UX Design', 'Figma', 'NextJS']
         }
       ]
-    }
+    },
   ]
 };
 
