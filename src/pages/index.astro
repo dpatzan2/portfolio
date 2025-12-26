@@ -4,11 +4,14 @@ import Layout from '../layouts/Layout.astro';
 import TopPanel from "../components/Deskop/TopPanel.astro";
 import Dock from "../components/Deskop/Dock.astro";
 import WindowsContainer from "../components/Deskop/WindowsContainer.astro";
-
+import BootScreen from "../components/BootScreen/BootScreen.astro";
 ---
 
-
-<Layout title="Diego Patzán - 23525">
+<Layout title="Diego Patzán | Portfolio">
+  <!-- Ubuntu Boot Screen -->
+  <BootScreen />
+  
+  <!-- Main Desktop -->
   <div class="h-screen bg-ubuntu-desktop bg-cover bg-center relative">
     <TopPanel />
     <Dock />
