@@ -1,0 +1,341 @@
+---
+// Scientific Calculator Component - Ubuntu GNOME Calculator style
+---
+
+<div class="calculator-container h-full flex flex-col bg-[#303030]">
+  <!-- Display -->
+  <div class="display-area p-4 bg-[#242424] border-b border-white/10">
+    <div id="calc-history" class="text-white/50 text-right text-sm h-6 overflow-hidden"></div>
+    <div id="calc-display" class="text-white text-right text-3xl font-light min-h-10 overflow-x-auto">0</div>
+  </div>
+  
+  <!-- Mode Toggle -->
+  <div class="flex border-b border-white/10">
+    <button class="calc-mode-btn active flex-1 py-2 text-xs text-white/70 hover:bg-white/10 transition-colors" data-mode="basic">Básica</button>
+    <button class="calc-mode-btn flex-1 py-2 text-xs text-white/70 hover:bg-white/10 transition-colors" data-mode="scientific">Científica</button>
+  </div>
+  
+  <!-- Scientific Functions (hidden by default) -->
+  <div id="scientific-panel" class="hidden grid grid-cols-5 gap-1 p-2 bg-[#2a2a2a] border-b border-white/10">
+    <button class="calc-btn-func" data-func="sin">sin</button>
+    <button class="calc-btn-func" data-func="cos">cos</button>
+    <button class="calc-btn-func" data-func="tan">tan</button>
+    <button class="calc-btn-func" data-func="log">log</button>
+    <button class="calc-btn-func" data-func="ln">ln</button>
+    <button class="calc-btn-func" data-func="sqrt">√</button>
+    <button class="calc-btn-func" data-func="pow2">x²</button>
+    <button class="calc-btn-func" data-func="pow3">x³</button>
+    <button class="calc-btn-func" data-func="pow">xʸ</button>
+    <button class="calc-btn-func" data-func="pi">π</button>
+    <button class="calc-btn-func" data-func="e">e</button>
+    <button class="calc-btn-func" data-func="abs">|x|</button>
+    <button class="calc-btn-func" data-func="fact">n!</button>
+    <button class="calc-btn-func" data-func="inv">1/x</button>
+    <button class="calc-btn-func" data-func="exp">EXP</button>
+  </div>
+  
+  <!-- Basic Buttons -->
+  <div class="flex-1 grid grid-cols-4 gap-1 p-2">
+    <!-- Row 1 -->
+    <button class="calc-btn-op" data-action="clear">C</button>
+    <button class="calc-btn-op" data-action="toggle-sign">±</button>
+    <button class="calc-btn-op" data-action="percent">%</button>
+    <button class="calc-btn-op calc-btn-primary" data-op="/">÷</button>
+    
+    <!-- Row 2 -->
+    <button class="calc-btn-num" data-num="7">7</button>
+    <button class="calc-btn-num" data-num="8">8</button>
+    <button class="calc-btn-num" data-num="9">9</button>
+    <button class="calc-btn-op calc-btn-primary" data-op="*">×</button>
+    
+    <!-- Row 3 -->
+    <button class="calc-btn-num" data-num="4">4</button>
+    <button class="calc-btn-num" data-num="5">5</button>
+    <button class="calc-btn-num" data-num="6">6</button>
+    <button class="calc-btn-op calc-btn-primary" data-op="-">−</button>
+    
+    <!-- Row 4 -->
+    <button class="calc-btn-num" data-num="1">1</button>
+    <button class="calc-btn-num" data-num="2">2</button>
+    <button class="calc-btn-num" data-num="3">3</button>
+    <button class="calc-btn-op calc-btn-primary" data-op="+">+</button>
+    
+    <!-- Row 5 -->
+    <button class="calc-btn-num col-span-2" data-num="0">0</button>
+    <button class="calc-btn-num" data-action="decimal">.</button>
+    <button class="calc-btn-op calc-btn-equals" data-action="equals">=</button>
+  </div>
+</div>
+
+<style>
+  .calc-btn-num, .calc-btn-op, .calc-btn-func {
+    @apply rounded-lg text-white font-medium transition-all active:scale-95;
+    min-height: 48px;
+  }
+  
+  .calc-btn-num {
+    @apply bg-[#454545] hover:bg-[#555555];
+  }
+  
+  .calc-btn-op {
+    @apply bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white/80;
+  }
+  
+  .calc-btn-func {
+    @apply bg-[#3a3a3a] hover:bg-[#4a4a4a] text-ubuntu-orange text-xs;
+  }
+  
+  .calc-btn-primary {
+    @apply bg-ubuntu-orange/80 hover:bg-ubuntu-orange text-white;
+  }
+  
+  .calc-btn-equals {
+    @apply bg-ubuntu-orange hover:bg-ubuntu-orange/90 text-white;
+  }
+  
+  .calc-mode-btn.active {
+    @apply text-ubuntu-orange border-b-2 border-ubuntu-orange;
+  }
+</style>
+
+<script>
+  // Calculator State
+  let currentValue = '0';
+  let previousValue = '';
+  let operation = '';
+  let shouldResetDisplay = false;
+  let waitingForPower = false;
+  
+  const display = document.getElementById('calc-display');
+  const history = document.getElementById('calc-history');
+  const scientificPanel = document.getElementById('scientific-panel');
+  
+  function updateDisplay() {
+    if (display) {
+      // Format large numbers
+      let displayValue = currentValue;
+      const num = parseFloat(currentValue);
+      if (!isNaN(num) && Math.abs(num) > 999999999) {
+        displayValue = num.toExponential(6);
+      }
+      display.textContent = displayValue;
+    }
+  }
+  
+  function updateHistory(text: string) {
+    if (history) history.textContent = text;
+  }
+  
+  // Number buttons
+  document.querySelectorAll('[data-num]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const num = (btn as HTMLElement).dataset.num;
+      if (!num) return;
+      
+      if (shouldResetDisplay || currentValue === '0') {
+        currentValue = num;
+        shouldResetDisplay = false;
+      } else if (currentValue.length < 15) {
+        currentValue += num;
+      }
+      updateDisplay();
+    });
+  });
+  
+  // Decimal button
+  document.querySelector('[data-action="decimal"]')?.addEventListener('click', () => {
+    if (shouldResetDisplay) {
+      currentValue = '0.';
+      shouldResetDisplay = false;
+    } else if (!currentValue.includes('.')) {
+      currentValue += '.';
+    }
+    updateDisplay();
+  });
+  
+  // Operation buttons
+  document.querySelectorAll('[data-op]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const op = (btn as HTMLElement).dataset.op;
+      if (!op) return;
+      
+      if (operation && !shouldResetDisplay) {
+        calculate();
+      }
+      
+      previousValue = currentValue;
+      operation = op;
+      shouldResetDisplay = true;
+      
+      const opSymbol = op === '*' ? '×' : op === '/' ? '÷' : op === '-' ? '−' : op;
+      updateHistory(`${previousValue} ${opSymbol}`);
+    });
+  });
+  
+  // Calculate result
+  function calculate() {
+    if (!operation || !previousValue) return;
+    
+    const prev = parseFloat(previousValue);
+    const curr = parseFloat(currentValue);
+    let result: number;
+    
+    switch (operation) {
+      case '+': result = prev + curr; break;
+      case '-': result = prev - curr; break;
+      case '*': result = prev * curr; break;
+      case '/': result = curr !== 0 ? prev / curr : NaN; break;
+      case 'pow': result = Math.pow(prev, curr); break;
+      default: return;
+    }
+    
+    if (isNaN(result) || !isFinite(result)) {
+      currentValue = 'Error';
+    } else {
+      currentValue = String(parseFloat(result.toPrecision(12)));
+    }
+    
+    updateHistory('');
+    operation = '';
+    previousValue = '';
+    shouldResetDisplay = true;
+    waitingForPower = false;
+    updateDisplay();
+  }
+  
+  // Equals button
+  document.querySelector('[data-action="equals"]')?.addEventListener('click', calculate);
+  
+  // Clear button
+  document.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
+    currentValue = '0';
+    previousValue = '';
+    operation = '';
+    shouldResetDisplay = false;
+    waitingForPower = false;
+    updateHistory('');
+    updateDisplay();
+  });
+  
+  // Toggle sign
+  document.querySelector('[data-action="toggle-sign"]')?.addEventListener('click', () => {
+    if (currentValue !== '0' && currentValue !== 'Error') {
+      currentValue = currentValue.startsWith('-') ? currentValue.slice(1) : '-' + currentValue;
+      updateDisplay();
+    }
+  });
+  
+  // Percent
+  document.querySelector('[data-action="percent"]')?.addEventListener('click', () => {
+    const num = parseFloat(currentValue);
+    if (!isNaN(num)) {
+      currentValue = String(num / 100);
+      updateDisplay();
+    }
+  });
+  
+  // Scientific functions
+  document.querySelectorAll('[data-func]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const func = (btn as HTMLElement).dataset.func;
+      const num = parseFloat(currentValue);
+      if (isNaN(num) && func !== 'pi' && func !== 'e') return;
+      
+      let result: number;
+      
+      switch (func) {
+        case 'sin': result = Math.sin(num * Math.PI / 180); break;
+        case 'cos': result = Math.cos(num * Math.PI / 180); break;
+        case 'tan': result = Math.tan(num * Math.PI / 180); break;
+        case 'log': result = Math.log10(num); break;
+        case 'ln': result = Math.log(num); break;
+        case 'sqrt': result = Math.sqrt(num); break;
+        case 'pow2': result = Math.pow(num, 2); break;
+        case 'pow3': result = Math.pow(num, 3); break;
+        case 'pow':
+          previousValue = currentValue;
+          operation = 'pow';
+          shouldResetDisplay = true;
+          waitingForPower = true;
+          updateHistory(`${currentValue} ^`);
+          return;
+        case 'pi': result = Math.PI; break;
+        case 'e': result = Math.E; break;
+        case 'abs': result = Math.abs(num); break;
+        case 'fact':
+          result = factorial(Math.floor(num));
+          break;
+        case 'inv': result = 1 / num; break;
+        case 'exp':
+          previousValue = currentValue;
+          operation = 'pow';
+          currentValue = '10';
+          shouldResetDisplay = true;
+          updateHistory(`10 ^`);
+          return;
+        default: return;
+      }
+      
+      if (isNaN(result) || !isFinite(result)) {
+        currentValue = 'Error';
+      } else {
+        currentValue = String(parseFloat(result.toPrecision(12)));
+      }
+      shouldResetDisplay = true;
+      updateDisplay();
+    });
+  });
+  
+  function factorial(n: number): number {
+    if (n < 0) return NaN;
+    if (n === 0 || n === 1) return 1;
+    if (n > 170) return Infinity;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return result;
+  }
+  
+  // Mode toggle
+  document.querySelectorAll('.calc-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = (btn as HTMLElement).dataset.mode;
+      
+      document.querySelectorAll('.calc-mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      if (mode === 'scientific') {
+        scientificPanel?.classList.remove('hidden');
+      } else {
+        scientificPanel?.classList.add('hidden');
+      }
+    });
+  });
+  
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    // Only handle if calculator window is focused
+    const calcContainer = document.querySelector('.calculator-container');
+    if (!calcContainer) return;
+    
+    const key = e.key;
+    
+    if (/[0-9]/.test(key)) {
+      document.querySelector(`[data-num="${key}"]`)?.dispatchEvent(new Event('click'));
+    } else if (key === '.') {
+      document.querySelector('[data-action="decimal"]')?.dispatchEvent(new Event('click'));
+    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+      document.querySelector(`[data-op="${key}"]`)?.dispatchEvent(new Event('click'));
+    } else if (key === 'Enter' || key === '=') {
+      document.querySelector('[data-action="equals"]')?.dispatchEvent(new Event('click'));
+    } else if (key === 'Escape' || key === 'c' || key === 'C') {
+      document.querySelector('[data-action="clear"]')?.dispatchEvent(new Event('click'));
+    } else if (key === 'Backspace') {
+      if (currentValue.length > 1) {
+        currentValue = currentValue.slice(0, -1);
+      } else {
+        currentValue = '0';
+      }
+      updateDisplay();
+    }
+  });
+</script>

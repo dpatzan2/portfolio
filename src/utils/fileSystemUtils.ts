@@ -2,19 +2,23 @@ import type { ProjectItem } from '../data/projects';
 
 export function getFileIcon(item: ProjectItem): string {
   const icons: Record<string, string> = {
-    'project': '🚀',
-    'task': '📋',
-    'study': '📚'
+    'project': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+    'task': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+    'study': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
   };
-  return item.icon || icons[item.type] || '📄';
+  // If icon is empty or not set, use the type-based SVG icon
+  if (!item.icon || item.icon.trim() === '') {
+    return icons[item.type] || '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+  }
+  return item.icon;
 }
 
 export function getStatusIcon(status: string): string {
   const icons: Record<string, string> = {
     'completado': '✓',
-    'en-progreso': '⟳',
+    'en-progreso': '~',
     'pendiente': '!',
-    'planeado': '◷'
+    'planeado': '○'
   };
   return icons[status] || '';
 }

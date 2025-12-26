@@ -1,18 +1,450 @@
 ---
-
 import Window from './Window.astro';
 import ProfileContent from '../Profile/ProfileContent.astro';
 import ProjectsFileSystem from '../Projects/ProjectsFileSystem.astro';
+import TerminalContent from '../Terminal/TerminalContent.astro';
+import PDFViewerContent from '../PDFViewer/PDFViewerContent.astro';
+import CalculatorContent from '../Calculator/CalculatorContent.astro';
 ---
 
-<div class="fixed top-7 left-0 md:left-17 right-0 bottom-0 grid grid-cols-1 lg:grid-cols-2 gap-2.5 p-2.5">
+<div id="windows-container" class="fixed top-7 left-0 md:left-17 right-0 bottom-14 md:bottom-0 overflow-hidden">
   <!-- Profile Window -->
-  <Window title="Perfil">
+  <Window title="Perfil" windowId="profile">
     <ProfileContent />
   </Window>
 
   <!-- Projects Window -->
-  <Window title="📁 Proyectos">
+  <Window title="Proyectos" windowId="projects">
     <ProjectsFileSystem />
   </Window>
+
+  <!-- Terminal Window (starts closed) -->
+  <Window title="Terminal" windowId="terminal" startOpen={false}>
+    <TerminalContent />
+  </Window>
+
+  <!-- PDF Viewer Window (starts closed) -->
+  <Window title="Visor de Documentos" windowId="pdfviewer" startOpen={false}>
+    <PDFViewerContent />
+  </Window>
+
+  <!-- Calculator Window (starts closed) -->
+  <Window title="Calculadora" windowId="calculator" startOpen={false}>
+    <CalculatorContent />
+  </Window>
 </div>
+
+<script>
+  // Window Manager - Controlador de ventanas
+  interface WindowState {
+    id: string;
+    element: HTMLElement;
+    isOpen: boolean;
+    isMinimized: boolean;
+    isMaximized: boolean;
+    isFocused: boolean;
+    position: { x: number; y: number };
+    size: { width: number; height: number };
+    prevPosition?: { x: number; y: number };
+    prevSize?: { width: number; height: number };
+    zIndex: number;
+  }
+
+  const windowStates = new Map<string, WindowState>();
+  let highestZIndex = 100;
+  let activeWindowId: string | null = null;
+
+  // Inicializar ventanas
+  function initWindows() {
+    const container = document.getElementById('windows-container');
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const windows = container.querySelectorAll('.ubuntu-window');
+    const isMobile = window.innerWidth < 768;
+    
+    // Count only windows that will be open
+    let openWindowIndex = 0;
+    
+    windows.forEach((windowEl) => {
+      const el = windowEl as HTMLElement;
+      const windowId = el.dataset.windowId;
+      if (!windowId) return;
+
+      // Check if window should start open (default true, unless data-start-open="false")
+      const shouldStartOpen = el.dataset.startOpen !== 'false';
+
+      let windowWidth: number;
+      let windowHeight: number;
+      let initialX: number;
+      let initialY: number;
+
+      if (isMobile) {
+        // Mobile: Full screen windows
+        windowWidth = containerRect.width;
+        windowHeight = containerRect.height - 60; // Leave space for mobile dock
+        initialX = 0;
+        initialY = 0;
+      } else {
+        // Desktop: 50/50 split for first two windows
+        const gap = 10;
+        const availableWidth = containerRect.width - (gap * 3);
+        windowWidth = availableWidth / 2;
+        windowHeight = containerRect.height - (gap * 2);
+        
+        initialX = openWindowIndex === 0 ? gap : windowWidth + (gap * 2);
+        initialY = gap;
+      }
+
+      const state: WindowState = {
+        id: windowId,
+        element: el,
+        isOpen: shouldStartOpen,
+        isMinimized: false,
+        isMaximized: isMobile && shouldStartOpen, // Auto-maximize on mobile
+        isFocused: false,
+        position: { x: initialX, y: initialY },
+        size: { width: windowWidth, height: windowHeight },
+        zIndex: ++highestZIndex
+      };
+
+      if (shouldStartOpen) openWindowIndex++;
+
+      windowStates.set(windowId, state);
+      applyWindowState(state);
+      
+      // Event listeners
+      setupWindowEvents(el, state);
+    });
+
+    // Enfocar primera ventana
+    const firstWindow = windowStates.values().next().value;
+    if (firstWindow) {
+      focusWindow(firstWindow.id);
+    }
+
+    // Notificar al dock sobre las ventanas abiertas
+    updateDockIndicators();
+  }
+
+  function applyWindowState(state: WindowState) {
+    const el = state.element;
+    
+    el.style.left = `${state.position.x}px`;
+    el.style.top = `${state.position.y}px`;
+    el.style.width = `${state.size.width}px`;
+    el.style.height = `${state.size.height}px`;
+    el.style.zIndex = `${state.zIndex}`;
+    
+    el.classList.toggle('focused', state.isFocused);
+    el.classList.toggle('minimized', state.isMinimized);
+    el.classList.toggle('maximized', state.isMaximized);
+    el.style.display = state.isOpen ? 'block' : 'none';
+  }
+
+  function focusWindow(windowId: string) {
+    // Desenfocar ventana anterior
+    if (activeWindowId && activeWindowId !== windowId) {
+      const prevState = windowStates.get(activeWindowId);
+      if (prevState) {
+        prevState.isFocused = false;
+        applyWindowState(prevState);
+      }
+    }
+
+    const state = windowStates.get(windowId);
+    if (!state || state.isMinimized) return;
+
+    state.isFocused = true;
+    state.zIndex = ++highestZIndex;
+    activeWindowId = windowId;
+    applyWindowState(state);
+    updateDockIndicators();
+  }
+
+  function minimizeWindow(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    state.isMinimized = true;
+    state.isFocused = false;
+    applyWindowState(state);
+
+    // Enfocar otra ventana
+    if (activeWindowId === windowId) {
+      activeWindowId = null;
+      for (const [id, s] of windowStates) {
+        if (id !== windowId && s.isOpen && !s.isMinimized) {
+          focusWindow(id);
+          break;
+        }
+      }
+    }
+    updateDockIndicators();
+  }
+
+  function restoreWindow(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    state.isMinimized = false;
+    focusWindow(windowId);
+    updateDockIndicators();
+  }
+
+  function toggleMaximize(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    if (state.isMaximized) {
+      // Restaurar
+      if (state.prevPosition && state.prevSize) {
+        state.position = { ...state.prevPosition };
+        state.size = { ...state.prevSize };
+      }
+      state.isMaximized = false;
+    } else {
+      // Maximizar
+      state.prevPosition = { ...state.position };
+      state.prevSize = { ...state.size };
+      state.isMaximized = true;
+    }
+
+    focusWindow(windowId);
+    applyWindowState(state);
+  }
+
+  function closeWindow(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    state.isOpen = false;
+    state.isFocused = false;
+    applyWindowState(state);
+
+    if (activeWindowId === windowId) {
+      activeWindowId = null;
+      for (const [id, s] of windowStates) {
+        if (id !== windowId && s.isOpen && !s.isMinimized) {
+          focusWindow(id);
+          break;
+        }
+      }
+    }
+    updateDockIndicators();
+  }
+
+  function openWindow(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    state.isOpen = true;
+    state.isMinimized = false;
+    focusWindow(windowId);
+    updateDockIndicators();
+  }
+
+  function toggleWindow(windowId: string) {
+    const state = windowStates.get(windowId);
+    if (!state) return;
+
+    if (!state.isOpen) {
+      openWindow(windowId);
+    } else if (state.isMinimized) {
+      restoreWindow(windowId);
+    } else if (state.isFocused) {
+      minimizeWindow(windowId);
+    } else {
+      focusWindow(windowId);
+    }
+  }
+
+  function setupWindowEvents(el: HTMLElement, state: WindowState) {
+    const header = el.querySelector('.window-header') as HTMLElement;
+    const closeBtn = el.querySelector('[data-action="close"]');
+    const minimizeBtn = el.querySelector('[data-action="minimize"]');
+    const maximizeBtn = el.querySelector('[data-action="maximize"]');
+
+    // Click para enfocar
+    el.addEventListener('mousedown', () => focusWindow(state.id));
+
+    // Botón cerrar
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeWindow(state.id);
+    });
+
+    // Botón minimizar
+    minimizeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      minimizeWindow(state.id);
+    });
+
+    // Botón maximizar
+    maximizeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMaximize(state.id);
+    });
+
+    // Doble click en header para maximizar
+    header?.addEventListener('dblclick', () => toggleMaximize(state.id));
+
+    // Drag para mover
+    setupDrag(el, header, state);
+
+    // Resize handles
+    setupResize(el, state);
+  }
+
+  function setupDrag(el: HTMLElement, header: HTMLElement, state: WindowState) {
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startPosX = 0;
+    let startPosY = 0;
+
+    header?.addEventListener('mousedown', (e) => {
+      if ((e.target as HTMLElement).closest('.window-btn')) return;
+      if (state.isMaximized) return;
+
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startPosX = state.position.x;
+      startPosY = state.position.y;
+
+      header.style.cursor = 'grabbing';
+      focusWindow(state.id);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      state.position.x = Math.max(0, startPosX + dx);
+      state.position.y = Math.max(0, startPosY + dy);
+
+      el.style.left = `${state.position.x}px`;
+      el.style.top = `${state.position.y}px`;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        header.style.cursor = 'grab';
+      }
+    });
+  }
+
+  function setupResize(el: HTMLElement, state: WindowState) {
+    const handles = el.querySelectorAll('.resize-handle');
+    
+    handles.forEach((handle) => {
+      const handleEl = handle as HTMLElement;
+      const direction = handleEl.dataset.resize;
+      if (!direction) return;
+
+      let isResizing = false;
+      let startX = 0;
+      let startY = 0;
+      let startWidth = 0;
+      let startHeight = 0;
+      let startPosX = 0;
+      let startPosY = 0;
+
+      handleEl.addEventListener('mousedown', (e) => {
+        if (state.isMaximized) return;
+        
+        e.stopPropagation();
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = state.size.width;
+        startHeight = state.size.height;
+        startPosX = state.position.x;
+        startPosY = state.position.y;
+
+        focusWindow(state.id);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+        let newX = startPosX;
+        let newY = startPosY;
+
+        if (direction.includes('e')) {
+          newWidth = Math.max(300, startWidth + dx);
+        }
+        if (direction.includes('w')) {
+          newWidth = Math.max(300, startWidth - dx);
+          newX = startPosX + (startWidth - newWidth);
+        }
+        if (direction.includes('s')) {
+          newHeight = Math.max(200, startHeight + dy);
+        }
+        if (direction.includes('n')) {
+          newHeight = Math.max(200, startHeight - dy);
+          newY = startPosY + (startHeight - newHeight);
+        }
+
+        state.size.width = newWidth;
+        state.size.height = newHeight;
+        state.position.x = newX;
+        state.position.y = newY;
+
+        el.style.width = `${newWidth}px`;
+        el.style.height = `${newHeight}px`;
+        el.style.left = `${newX}px`;
+        el.style.top = `${newY}px`;
+      });
+
+      document.addEventListener('mouseup', () => {
+        isResizing = false;
+      });
+    });
+  }
+
+  function updateDockIndicators() {
+    // Actualizar indicadores del dock
+    const dockItems = document.querySelectorAll('[data-dock-window]');
+    dockItems.forEach((item) => {
+      const dockEl = item as HTMLElement;
+      const windowId = dockEl.dataset.dockWindow;
+      if (!windowId) return;
+
+      const state = windowStates.get(windowId);
+      const indicator = dockEl.querySelector('.dock-indicator') as HTMLElement;
+      
+      if (indicator) {
+        if (state?.isOpen && !state.isMinimized) {
+          indicator.classList.remove('hidden');
+          indicator.classList.toggle('active', state.isFocused);
+        } else {
+          indicator.classList.add('hidden');
+        }
+      }
+    });
+  }
+
+  // Exponer funciones globalmente para el dock
+  (window as any).windowManager = {
+    toggleWindow,
+    focusWindow,
+    openWindow,
+    closeWindow,
+    minimizeWindow,
+    restoreWindow,
+    getWindowStates: () => windowStates
+  };
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', initWindows);
+</script>

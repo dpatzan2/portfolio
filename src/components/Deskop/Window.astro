@@ -1,25 +1,161 @@
 ---
-
 export interface Props {
   title: string;
+  windowId: string;
   class?: string;
+  startOpen?: boolean;
 }
 
-const { title, class: className = "" } = Astro.props;
+const { title, windowId, class: className = "", startOpen = true } = Astro.props;
 ---
 
-<div class={`bg-ubuntu-window rounded-lg overflow-hidden shadow-2xl border border-white/10 h-full ${className}`}>
-  <div class="bg-ubuntu-header p-2 flex items-center justify-between border-b border-white/10">
-    <div class="text-white text-sm ml-8">
+<div 
+  class={`ubuntu-window bg-ubuntu-window rounded-lg overflow-hidden shadow-2xl border border-white/10 ${className}`}
+  data-window-id={windowId}
+  data-window-title={title}
+  data-start-open={startOpen.toString()}
+>
+  <!-- Header - Arrastrable -->
+  <div class="window-header bg-ubuntu-header p-2 flex items-center justify-between border-b border-white/10 cursor-grab active:cursor-grabbing select-none">
+    <div class="flex gap-2">
+      <!-- Botón Cerrar (Rojo) -->
+      <button 
+        class="window-btn window-close w-4 h-4 rounded-full bg-red-500 hover:bg-red-400 transition-colors flex items-center justify-center group"
+        data-action="close"
+        title="Cerrar"
+      >
+        <svg class="w-2 h-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 2l8 8M10 2l-8 8"/>
+        </svg>
+      </button>
+      <!-- Botón Minimizar (Amarillo) -->
+      <button 
+        class="window-btn window-minimize w-4 h-4 rounded-full bg-yellow-500 hover:bg-yellow-400 transition-colors flex items-center justify-center group"
+        data-action="minimize"
+        title="Minimizar"
+      >
+        <svg class="w-2 h-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 6h8"/>
+        </svg>
+      </button>
+      <!-- Botón Maximizar (Verde) -->
+      <button 
+        class="window-btn window-maximize w-4 h-4 rounded-full bg-green-500 hover:bg-green-400 transition-colors flex items-center justify-center group"
+        data-action="maximize"
+        title="Maximizar"
+      >
+        <svg class="w-2 h-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="8" height="8" rx="1"/>
+        </svg>
+      </button>
+    </div>
+    <div class="text-white text-sm font-medium flex-1 text-center pointer-events-none">
       {title}
     </div>
-    <div class="flex gap-2">
-      <button class="w-4 h-4 rounded-full bg-yellow-500 hover:bg-yellow-400 transition-colors"></button>
-      <button class="w-4 h-4 rounded-full bg-green-500 hover:bg-green-400 transition-colors"></button>
-      <button class="w-4 h-4 rounded-full bg-red-500 hover:bg-red-400 transition-colors"></button>
-    </div>
+    <div class="w-16"></div> <!-- Spacer para centrar el título -->
   </div>
-  <div class="p-5 text-white h-full overflow-y-auto" style="height: calc(100% - 37px);">
+  
+  <!-- Contenido -->
+  <div class="window-content p-5 text-white h-full overflow-y-auto" style="height: calc(100% - 41px);">
     <slot />
   </div>
+  
+  <!-- Resize Handles -->
+  <div class="resize-handle resize-n" data-resize="n"></div>
+  <div class="resize-handle resize-s" data-resize="s"></div>
+  <div class="resize-handle resize-e" data-resize="e"></div>
+  <div class="resize-handle resize-w" data-resize="w"></div>
+  <div class="resize-handle resize-ne" data-resize="ne"></div>
+  <div class="resize-handle resize-nw" data-resize="nw"></div>
+  <div class="resize-handle resize-se" data-resize="se"></div>
+  <div class="resize-handle resize-sw" data-resize="sw"></div>
 </div>
+
+<style>
+  .ubuntu-window {
+    position: absolute;
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+  }
+
+  .ubuntu-window.focused {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .ubuntu-window.minimized {
+    transform: scale(0.8);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ubuntu-window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0;
+  }
+
+  .ubuntu-window.maximized .resize-handle {
+    display: none;
+  }
+
+  /* Resize Handles */
+  .resize-handle {
+    position: absolute;
+    z-index: 10;
+  }
+
+  .resize-n, .resize-s {
+    height: 6px;
+    left: 6px;
+    right: 6px;
+    cursor: ns-resize;
+  }
+
+  .resize-n { top: -3px; }
+  .resize-s { bottom: -3px; }
+
+  .resize-e, .resize-w {
+    width: 6px;
+    top: 6px;
+    bottom: 6px;
+    cursor: ew-resize;
+  }
+
+  .resize-e { right: -3px; }
+  .resize-w { left: -3px; }
+
+  .resize-ne, .resize-nw, .resize-se, .resize-sw {
+    width: 12px;
+    height: 12px;
+  }
+
+  .resize-ne { top: -3px; right: -3px; cursor: nesw-resize; }
+  .resize-nw { top: -3px; left: -3px; cursor: nwse-resize; }
+  .resize-se { bottom: -3px; right: -3px; cursor: nwse-resize; }
+  .resize-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+
+  .window-btn {
+    position: relative;
+  }
+
+  .window-btn svg {
+    stroke: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Animación de apertura */
+  @keyframes windowOpen {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .ubuntu-window {
+    animation: windowOpen 0.2s ease-out;
+  }
+</style>
