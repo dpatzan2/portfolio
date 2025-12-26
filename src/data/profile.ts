@@ -7,9 +7,7 @@ export interface SkillWithIcon {
 
 export interface ProfileData {
   name: string;
-  carne: string;
   email: string;
-  course: string;
   description: string[];
   skills: SkillWithIcon[];
   softSkills: string[];
@@ -22,9 +20,7 @@ function createSkill(name: string): SkillWithIcon {
 
 export const profileData: ProfileData = {
   name: "Diego Fernando Patzán Marroquín",
-  carne: "23525",
-  email: "pat23525@uvg.edu.gt",
-  course: "Sistemas y tecnologías web",
+  email: "df.patzan@gmail.com",
   description: [
     "Estudiante de Ingeniería en Ciencias de la Computación en la universidad del valle de Guatemala, con pasión por el desarrollo web y las tecnologías emergentes.",
     "Siempre en busca de nuevos desafíos que me permitan crecer profesionalmente."

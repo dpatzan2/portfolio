@@ -14,16 +14,12 @@ import { profileData } from '../../data/profile';
       <h2 class="text-xl md:text-2xl font-bold mb-3">{profileData.name}</h2>
       <div class="space-y-1 text-sm">
         <p>
-          <strong class="text-ubuntu-orange">Carne:</strong> {profileData.carne}
-        </p>
-        <p>
           <strong class="text-ubuntu-orange">Correo:</strong> 
           <a href={`mailto:${profileData.email}`} class="text-blue-400 hover:text-blue-300 transition-colors">
             {profileData.email}
           </a>
         </p>
         <p>
-          <strong class="text-ubuntu-orange">Curso:</strong> {profileData.course}
         </p>
       </div>
     </div>
