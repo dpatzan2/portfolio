@@ -178,19 +178,47 @@ Visita la ventana de Proyectos para más detalles.`
   
   // Commands
   const commands = {
-    help: () => `Comandos disponibles:
-  help        - Muestra esta ayuda
-  whoami      - Muestra el usuario actual
-  pwd         - Muestra el directorio actual
-  cd [dir]    - Cambia de directorio
-  ls [dir]    - Lista archivos y directorios
-  cat [file]  - Muestra el contenido de un archivo
-  clear       - Limpia la terminal
-  date        - Muestra la fecha actual
-  echo [text] - Imprime texto
-  neofetch    - Muestra información del sistema
-  history     - Muestra historial de comandos
-  cd [dir]    - Cambia de directorio`,
+    help: () => `<span class="text-cyan-400">═══════════════════════════════════════════════════════════════</span>
+<span class="text-yellow-400">                     COMANDOS DISPONIBLES</span>
+<span class="text-cyan-400">═══════════════════════════════════════════════════════════════</span>
+
+<span class="text-green-400">NAVEGACIÓN:</span>
+  <span class="text-white">pwd</span>           - Muestra el directorio actual
+  <span class="text-white">cd [dir]</span>      - Cambia de directorio
+  <span class="text-white">ls [dir]</span>      - Lista archivos y directorios
+  <span class="text-white">tree</span>          - Muestra estructura de directorios
+  <span class="text-white">cat [file]</span>    - Muestra el contenido de un archivo
+  <span class="text-white">cd [dir]</span>      - Cambia de directorio
+
+<span class="text-green-400">INFORMACIÓN:</span>
+  <span class="text-white">whoami</span>        - Muestra el usuario actual
+  <span class="text-white">neofetch</span>      - Muestra información del sistema
+  <span class="text-white">uname [-a]</span>    - Información del kernel
+  <span class="text-white">uptime</span>        - Tiempo encendido
+  <span class="text-white">date</span>          - Fecha y hora actual
+  <span class="text-white">weather</span>       - Clima actual 
+  <span class="text-white">social</span>        - Mis redes sociales
+
+<span class="text-green-400">DIVERSIÓN:</span>
+  <span class="text-white">fortune</span>       - Frase aleatoria de programación
+  <span class="text-white">cowsay [msg]</span>  - Vaca que habla 
+  <span class="text-white">joke</span>          - Chiste de programación
+  <span class="text-white">matrix</span>        - Efecto Matrix (5 seg)
+  <span class="text-white">sl</span>            - Tren sorpresa
+  <span class="text-white">figlet [text]</span> - Texto ASCII art
+  <span class="text-white">lolcat [text]</span> - Texto con colores
+
+<span class="text-green-400">UTILIDADES:</span>
+  <span class="text-white">echo [text]</span>   - Imprime texto
+  <span class="text-white">clear</span>         - Limpia la terminal
+  <span class="text-white">history</span>       - Historial de comandos
+  <span class="text-white">man [cmd]</span>     - Manual de comandos
+  <span class="text-white">calc [expr]</span>   - Calculadora
+  <span class="text-white">hola</span>          - Saludo personalizado
+  <span class="text-white">cafe</span>          - Hora de un café
+
+<span class="text-cyan-400">═══════════════════════════════════════════════════════════════</span>
+<span class="text-gray-400">Tip: Usa las flechas ↑↓ para navegar el historial</span>`,
     
     whoami: () => 'guest',
     
@@ -214,7 +242,7 @@ Visita la ventana de Proyectos para más detalles.`
       // Visual confirmation of directory change
       const displayPath = getDisplayPath(currentPath);
       const itemCount = Object.keys(node.children || {}).length;
-      return `<span class="text-cyan-400">📂 ${displayPath}</span> <span class="text-gray-500">(${itemCount} elemento${itemCount !== 1 ? 's' : ''})</span>`;
+      return `<span class="text-cyan-400"> ${displayPath}</span> <span class="text-gray-500">(${itemCount} elemento${itemCount !== 1 ? 's' : ''})</span>`;
     },
     
     ls: (args) => {
@@ -240,6 +268,35 @@ Visita la ventana de Proyectos para más detalles.`
         }
         return `<span class="text-white">${name}</span>`;
       }).join('  ');
+    },
+
+    tree: (args) => {
+      const target = args && args.length > 0 ? resolvePath(args[0]) : currentPath;
+      const node = getNode(target);
+      
+      if (!node || node.type !== 'dir') {
+        return `<span class="text-red-400">tree: No se puede mostrar árbol</span>`;
+      }
+      
+      let output = `<span class="text-blue-400">${getDisplayPath(target)}</span>\n`;
+      
+      function buildTree(node, prefix = '') {
+        const entries = Object.keys(node.children || {});
+        entries.forEach((name, index) => {
+          const isLast = index === entries.length - 1;
+          const child = node.children[name];
+          const connector = isLast ? '└── ' : '├── ';
+          const color = child.type === 'dir' ? 'text-blue-400' : 'text-white';
+          output += prefix + connector + `<span class="${color}">${name}${child.type === 'dir' ? '/' : ''}</span>\n`;
+          
+          if (child.type === 'dir') {
+            buildTree(child, prefix + (isLast ? '    ' : '│   '));
+          }
+        });
+      }
+      
+      buildTree(node);
+      return output;
     },
     
     cat: (args) => {
@@ -274,8 +331,275 @@ Visita la ventana de Proyectos para más detalles.`
       minute: '2-digit',
       second: '2-digit'
     }),
+
+    uptime: () => {
+      const days = Math.floor(Math.random() * 365) + 1;
+      const hours = Math.floor(Math.random() * 24);
+      const mins = Math.floor(Math.random() * 60);
+      return `<span class="text-green-400">⏱ Encendido:</span> ${days} días, ${hours} horas, ${mins} minutos
+<span class="text-gray-400">   Carga promedio: 0.42, 0.38, 0.35</span>`;
+    },
+
+    uname: (args) => {
+      if (args && args[0] === '-a') {
+        return 'Linux dpatzan-portfolio 6.5.0-astro #1 SMP PREEMPT_DYNAMIC Web x86_64 GNU/Linux';
+      }
+      return 'Linux';
+    },
+
+    weather: () => {
+      const conditions = [
+        { icon: '☀️', desc: 'Soleado', temp: '28°C' },
+        { icon: '🌤️', desc: 'Parcialmente nublado', temp: '24°C' },
+        { icon: '⛅', desc: 'Nublado', temp: '22°C' },
+        { icon: '🌧️', desc: 'Lluvia ligera', temp: '18°C' },
+        { icon: '⛈️', desc: 'Tormenta', temp: '16°C' }
+      ];
+      const w = conditions[Math.floor(Math.random() * conditions.length)];
+      return `<span class="text-cyan-400">
+┌──────────────────────────────────────┐
+│     ${w.icon}  CLIMA EN GUATEMALA CITY      │
+├──────────────────────────────────────┤
+│  Condición: ${w.desc.padEnd(20)}     │
+│  Temperatura: ${w.temp.padEnd(18)}     │
+│  Humedad: ${Math.floor(Math.random() * 40 + 50)}%                        │
+└──────────────────────────────────────┘
+</span>`;
+    },
+
+    social: () => `<span class="text-cyan-400">
+╔═══════════════════════════════════════════════════════════╗
+║                    🌐 REDES SOCIALES                      ║
+╠═══════════════════════════════════════════════════════════╣
+║                                                           ║
+║   <span class="text-white"> Email:</span>     df.patzan@gmail.com                     ║
+║   <span class="text-white"> GitHub:</span>    github.com/dpatzan                       ║
+║   <span class="text-white"> LinkedIn:</span>  inkedin.com/in/diego-patz%C3%A1n-144b51255                  ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+</span>`,
     
     echo: (args) => args ? args.join(' ') : '',
+
+    fortune: () => {
+      const fortunes = [
+        '"El código que funciona es el mejor código." - Programador anónimo',
+        '"Hay dos formas de escribir código: tan simple que no hay errores obvios, o tan complejo que no hay errores obvios." - C.A.R. Hoare',
+        '"El debugging es como ser un detective en una película de crimen donde tú también eres el asesino." - Filipe Fortes',
+        '"El mejor código es el que no escribes." - Jeff Atwood',
+        '"Programar es como escribir un libro... excepto que si olvidas un punto y coma, el libro entero no funciona."',
+        '"No soy un gran programador; solo soy un buen programador con grandes hábitos." - Kent Beck',
+        '"El código es poesía." - WordPress',
+        '"Primero, resuelve el problema. Luego, escribe el código." - John Johnson',
+        '"La simplicidad es la sofisticación definitiva." - Leonardo da Vinci',
+        '"Los programadores no mueren, solo pierden su memoria." - Anónimo',
+        '"Un buen programador es aquel que mira a ambos lados antes de cruzar una calle de un solo sentido." - Doug Linder',
+        '"Si depurar es el proceso de eliminar bugs, entonces programar es el proceso de crearlos." - Edsger Dijkstra'
+      ];
+      const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+      return `<span class="text-yellow-400"> ${fortune}</span>`;
+    },
+
+    cowsay: (args) => {
+      const message = args && args.length > 0 ? args.join(' ') : 'Moo! Hola desde el portfolio!';
+      const msgLen = message.length;
+      const border = '_'.repeat(msgLen + 2);
+      const borderBottom = '-'.repeat(msgLen + 2);
+      return `<span class="text-white"> ${border}
+< ${message} >
+ ${borderBottom}
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||</span>`;
+    },
+
+    joke: () => {
+      const jokes = [
+        { q: '¿Por qué los programadores prefieren el frío?', a: 'Porque odian los bugs (insectos)!' },
+        { q: '¿Cuántos programadores se necesitan para cambiar una bombilla?', a: 'Ninguno, es un problema de hardware.' },
+        { q: '¿Por qué Java desarrolló depresión?', a: 'Porque no tiene amigos, solo clases.' },
+        { q: '¿Qué hace un programador cuando tiene hambre?', a: 'return comida;' },
+        { q: '¿Por qué los programadores confunden Halloween con Navidad?', a: 'Porque OCT 31 = DEC 25 ' },
+        { q: '¿Cuál es la ciudad favorita de los programadores?', a: 'GitHub City ' },
+        { q: '¿Por qué el desarrollador se fue a la oscuridad?', a: 'Porque tenía miedo de la luz (modo) ' },
+        { q: 'Un SQL entra a un bar, se acerca a dos mesas y pregunta...', a: '"¿Puedo unirme?" (JOIN) ' }
+      ];
+      const joke = jokes[Math.floor(Math.random() * jokes.length)];
+      return `<span class="text-green-400"> ${joke.q}</span>
+<span class="text-yellow-400">   ${joke.a}</span>`;
+    },
+
+    matrix: () => {
+      // Start matrix effect
+      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+      let matrixInterval;
+      let count = 0;
+      
+      const createMatrixLine = () => {
+        const line = document.createElement('div');
+        line.className = 'text-green-400';
+        let text = '';
+        for (let i = 0; i < 60; i++) {
+          text += chars[Math.floor(Math.random() * chars.length)];
+        }
+        line.textContent = text;
+        output.appendChild(line);
+        output.scrollTop = output.scrollHeight;
+      };
+      
+      matrixInterval = setInterval(() => {
+        createMatrixLine();
+        count++;
+        if (count > 30) {
+          clearInterval(matrixInterval);
+          addOutput('<span class="text-cyan-400">Wake up, Neo... La Matrix te tiene.</span>');
+        }
+      }, 150);
+      
+      return '<span class="text-green-400"> Iniciando Matrix...</span>';
+    },
+
+    sl: () => {
+      const train = `<span class="text-white">
+      ====        ________                ___________
+  _D _|  |_______/        \\__I_I_____===__|_________|
+   |(_)---  |   H\\________/ |   |        =|___ ___|   
+   /     |  |   H  |  |     |   |         ||_| |_||   
+  |      |  |   H  |__--------------------| [___] |   
+  | ________|___H__/__|_____/[][]~\\_______|       |   
+  |/ |   |-----------I_____I [][] []  D   |=======|__ 
+__/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__ 
+ |/-=|___|=   O=====O=====O=====O|_____/~\\___/        
+  \\_/      \\__/  \\__/  \\__/  \\__/      \\_/            
+</span>
+<span class="text-yellow-400"> ¡Chuu chuu! El tren ha pasado...</span>`;
+      return train;
+    },
+
+    figlet: (args) => {
+      const text = args && args.length > 0 ? args.join(' ').toUpperCase() : 'HELLO';
+      const letters = {
+        'A': ['  █  ', ' █ █ ', '█████', '█   █', '█   █'],
+        'B': ['████ ', '█   █', '████ ', '█   █', '████ '],
+        'C': [' ████', '█    ', '█    ', '█    ', ' ████'],
+        'D': ['████ ', '█   █', '█   █', '█   █', '████ '],
+        'E': ['█████', '█    ', '████ ', '█    ', '█████'],
+        'F': ['█████', '█    ', '████ ', '█    ', '█    '],
+        'G': [' ████', '█    ', '█  ██', '█   █', ' ████'],
+        'H': ['█   █', '█   █', '█████', '█   █', '█   █'],
+        'I': ['█████', '  █  ', '  █  ', '  █  ', '█████'],
+        'J': ['█████', '   █ ', '   █ ', '█  █ ', ' ██  '],
+        'K': ['█   █', '█  █ ', '███  ', '█  █ ', '█   █'],
+        'L': ['█    ', '█    ', '█    ', '█    ', '█████'],
+        'M': ['█   █', '██ ██', '█ █ █', '█   █', '█   █'],
+        'N': ['█   █', '██  █', '█ █ █', '█  ██', '█   █'],
+        'O': [' ███ ', '█   █', '█   █', '█   █', ' ███ '],
+        'P': ['████ ', '█   █', '████ ', '█    ', '█    '],
+        'Q': [' ███ ', '█   █', '█ █ █', '█  █ ', ' ██ █'],
+        'R': ['████ ', '█   █', '████ ', '█  █ ', '█   █'],
+        'S': [' ████', '█    ', ' ███ ', '    █', '████ '],
+        'T': ['█████', '  █  ', '  █  ', '  █  ', '  █  '],
+        'U': ['█   █', '█   █', '█   █', '█   █', ' ███ '],
+        'V': ['█   █', '█   █', '█   █', ' █ █ ', '  █  '],
+        'W': ['█   █', '█   █', '█ █ █', '██ ██', '█   █'],
+        'X': ['█   █', ' █ █ ', '  █  ', ' █ █ ', '█   █'],
+        'Y': ['█   █', ' █ █ ', '  █  ', '  █  ', '  █  '],
+        'Z': ['█████', '   █ ', '  █  ', ' █   ', '█████'],
+        ' ': ['     ', '     ', '     ', '     ', '     '],
+        '!': ['  █  ', '  █  ', '  █  ', '     ', '  █  '],
+        '?': [' ███ ', '█   █', '  ██ ', '     ', '  █  '],
+      };
+      
+      let result = ['', '', '', '', ''];
+      for (const char of text.slice(0, 10)) {
+        const letter = letters[char] || letters[' '];
+        for (let i = 0; i < 5; i++) {
+          result[i] += letter[i] + ' ';
+        }
+      }
+      
+      return `<span class="text-[#E95420]">${result.join('\n')}</span>`;
+    },
+
+    lolcat: (args) => {
+      const text = args && args.length > 0 ? args.join(' ') : 'Rainbow Text!';
+      const colors = ['text-red-400', 'text-orange-400', 'text-yellow-400', 'text-green-400', 'text-cyan-400', 'text-blue-400', 'text-purple-400'];
+      
+      let result = '';
+      for (let i = 0; i < text.length; i++) {
+        const color = colors[i % colors.length];
+        result += `<span class="${color}">${text[i]}</span>`;
+      }
+      return result;
+    },
+
+    calc: (args) => {
+      if (!args || args.length === 0) {
+        return '<span class="text-gray-400">Uso: calc [expresión]  Ejemplo: calc 2+2*3</span>';
+      }
+      try {
+        const expr = args.join('').replace(/[^0-9+\-*/().]/g, '');
+        const result = Function('"use strict"; return (' + expr + ')')();
+        return `<span class="text-green-400"> ${args.join(' ')} = ${result}</span>`;
+      } catch (e) {
+        return '<span class="text-red-400">Error: Expresión inválida</span>';
+      }
+    },
+
+    man: (args) => {
+      if (!args || args.length === 0) {
+        return '<span class="text-gray-400">Uso: man [comando]</span>';
+      }
+      const manuals = {
+        ls: 'ls - lista el contenido del directorio\n\nUSO: ls [directorio]\n\nLista información sobre los archivos y directorios.',
+        cd: 'cd - cambia el directorio de trabajo\n\nUSO: cd [directorio]\n\nCambia el directorio actual al especificado. Usa ~ para ir al home.',
+        cat: 'cat - concatena y muestra archivos\n\nUSO: cat [archivo]\n\nMuestra el contenido de un archivo de texto.',
+        cowsay: 'cowsay - genera una vaca ASCII que habla\n\nUSO: cowsay [mensaje]\n\nMuestra una vaca diciendo el mensaje proporcionado.',
+        fortune: 'fortune - muestra una frase aleatoria\n\nUSO: fortune\n\nMuestra frases de programación aleatorias.',
+        matrix: 'matrix - efecto Matrix\n\nUSO: matrix\n\nMuestra el efecto de lluvia de caracteres de Matrix.',
+        figlet: 'figlet - texto ASCII art\n\nUSO: figlet [texto]\n\nConvierte texto a arte ASCII.'
+      };
+      
+      const cmd = args[0].toLowerCase();
+      if (manuals[cmd]) {
+        return `<span class="text-yellow-400">${manuals[cmd]}</span>`;
+      }
+      return `<span class="text-red-400">No hay manual para '${cmd}'</span>`;
+    },
+
+    hola: () => {
+      const hour = new Date().getHours();
+      let greeting = '';
+      if (hour < 12) greeting = '¡Buenos días! ';
+      else if (hour < 18) greeting = '¡Buenas tardes! ';
+      else greeting = '¡Buenas noches! ';
+      
+      return `<span class="text-cyan-400">${greeting}</span>
+<span class="text-white">Soy Diego Patzán, desarrollador web apasionado.</span>
+<span class="text-gray-400">Gracias por visitar mi portfolio. ¡Explora con los comandos!</span>`;
+    },
+
+    cafe: () => {
+      return `<span class="text-yellow-600">
+         {
+      {   }
+       }_{ __{
+    .-{   }   }-.
+   (   }     {   )
+   |\`-.._____..-'|
+   |             ;--.
+   |            (__  \\
+   |             | )  )
+   |             |/  /
+   |             /  /
+   |            (  /
+   \\             y'
+    \`-.._____..-'
+</span>
+<span class="text-white">¡Hora de un café! El combustible de todo programador.</span>`;
+    },
     
     neofetch: () => `<span class="text-[#E95420]">       _,met$$$$$gg.           </span><span class="text-white">guest@dpatzan</span>
 <span class="text-[#E95420]">    ,g$$$$$$$$$$$$$$$P.        </span><span class="text-white">--------------</span>
@@ -310,13 +634,69 @@ Visita la ventana de Proyectos para más detalles.`
       return `<span class="text-yellow-400">touch: Operación no permitida - Este portfolio es de solo lectura</span>`;
     },
     
-    sudo: () => `<span class="text-red-400">sudo: No tienes permisos de superusuario en este portfolio 😄</span>`,
+    sudo: (args) => {
+      if (args && args.length > 0 && args[0] === 'rm' && args.includes('-rf') && args.includes('/')) {
+        return `<span class="text-red-400"> ¡ALTO AHÍ! No destruyas mi portfolio </span>`;
+      }
+      return `<span class="text-red-400">sudo: No tienes permisos de superusuario en este portfolio 
+<span class="text-gray-400">Pero si quieres, puedes contactarme para colaborar!</span></span>`;
+    },
     
-    rm: () => `<span class="text-red-400">rm: Operación no permitida - Este portfolio es de solo lectura</span>`,
+    rm: (args) => {
+      if (args && args.includes('-rf')) {
+        return `<span class="text-red-400"> ¡Hey! Este portfolio tiene protección anti-destrucción activada.</span>`;
+      }
+      return `<span class="text-red-400">rm: Operación no permitida - Este portfolio es de solo lectura</span>`;
+    },
     
     exit: () => {
       addOutput('<span class="text-yellow-400">¡Hasta pronto! Cierra la ventana para salir.</span>');
       return null;
+    },
+
+    vim: () => '<span class="text-yellow-400">vim: ¿Cómo salir de vim?  Pista: :q! (Es broma, no hay vim aquí)</span>',
+    
+    nano: () => '<span class="text-gray-400">nano: Editor no disponible. Este portfolio es de solo lectura.</span>',
+
+    ping: (args) => {
+      if (!args || args.length === 0) {
+        return '<span class="text-gray-400">Uso: ping [host]</span>';
+      }
+      return `PING ${args[0]} (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.039 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.041 ms
+--- ${args[0]} ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss`;
+    },
+
+    git: (args) => {
+      if (!args || args.length === 0) {
+        return '<span class="text-gray-400">Git está disponible. Comandos: git status, git log</span>';
+      }
+      if (args[0] === 'status') {
+        return `<span class="text-green-400">En rama main
+Tu rama está actualizada con 'origin/main'.
+
+nada para hacer commit, el árbol de trabajo está limpio</span>`;
+      }
+      if (args[0] === 'log') {
+        return `<span class="text-yellow-400">commit a1b2c3d4e5f6...</span>
+Author: Diego Patzán <df.patzan@gmail.com>
+Date:   ${new Date().toDateString()}
+
+    🚀 Portfolio actualizado`;
+      }
+      return `<span class="text-gray-400">git: '${args[0]}' no es un comando git</span>`;
+    },
+
+    npm: (args) => {
+      if (args && args[0] === 'install') {
+        return `<span class="text-yellow-400"> Instalando paquetes...</span>
+added 1337 packages in 3.14s
+<span class="text-green-400"> ¡Instalación completada!</span>`;
+      }
+      return '<span class="text-gray-400">npm: gestor de paquetes de Node.js</span>';
     }
   };
   
