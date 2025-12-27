@@ -128,81 +128,28 @@ export const projectsData: ProjectsData = {
           preview: '/assets/personales/ux.png',
           technologies: ['HTML', 'CSS', 'JavaScript'],
           githubLink: 'https://github.com/dpatzan2/presentacion'
+        },
+        {
+          id: 'proyecto-software',
+          name: 'Gestión de flujos bpm para Adium',
+          type: 'project',
+          icon: '',
+          status: 'completado',
+          priority: 'alta',
+          target: '_blank',
+          description: ['Desarrollo de un gestor de flujos BPM para Adium, en el cual se pueden crear flujos de trabajo para automatizar procesos, aprobar mediamentos nuevos, aprobar vacaciones de un emepleado, gestionar departamentos, roles y grupos de aprobacion.'],
+          preview: '/assets/tareas/proyecto2.png',
+          technologies: ['React', 'TailwindCSS', 'C#', 'TSX', 'SQLServer', 'Docker', '. NET Core', 'Rest API'],
+          githubLink: 'https://github.com/Fluentis-BPM'
         }
       ]
     },
     {
-      id: 'tareas-clase',
-      name: 'Tareas de Clase',
+      id: 'proyectos-universitarios',
+      name: 'Proyectos universitarios relevantes',
       icon: '',
       expanded: true,
       items: [
-        {
-          id: 'asistencia1',
-          name: 'Asistencia 1',
-          type: 'task',
-          icon: '',
-          status: 'completado',
-          priority: 'baja',
-          link: 'https://23525.dernait.my/20250128.txt',
-          target: '_blank',
-          description: ['Primer archivo subido al servidor como actividad de asistencia.'],
-          technologies: ['TXT']
-        },
-        {
-          id: 'asistencia2',
-          name: 'Asistencia 2 - Top 10',
-          type: 'task',
-          icon: '',
-          status: 'completado',
-          priority: 'baja',
-          link: 'https://23525.dernait.my/top10/',
-          target: '_blank',
-          description: ['Primera interacción con html creando un top 10 a nuestra elección'],
-          preview: '/assets/tareas/top10.png',
-          technologies: ['HTML']
-        },
-        {
-          id: 'lab1',
-          name: 'Lab 1: Internet antes de la web',
-          type: 'task',
-          icon: '',
-          status: 'completado',
-          priority: 'media',
-          link: 'https://23525.dernait.my/lab1/',
-          target: '_blank',
-          description: ['Comprender cómo funcionaba el internet antes de la popularización de la web.'],
-          preview: '/assets/tareas/.lab1png',
-          technologies: ['HTML'],
-          githubLink: 'https://github.com/dpatzan2/command-line-clues'
-        },
-        {
-          id: 'lab2',
-          name: 'Lab 2: Servidores remotos',
-          type: 'task',
-          icon: '',
-          status: 'completado',
-          priority: 'media',
-          link: 'https://23525.dernait.my/lab2/Lab%202%20-%20Administracion%20de%20servidore%20-%2023525.txt',
-          target: '_blank',
-          description: ['Administración de servidores LINUX via SSH'],
-          preview: '/assets/tareas/lab2.png',
-          technologies: ['Linux', 'SSH']
-        },
-        {
-          id: 'lab3',
-          name: 'Lab 3: HTML only',
-          type: 'task',
-          icon: '',
-          status: 'completado',
-          priority: 'media',
-          link: 'https://23525.dernait.my/lab3/',
-          target: '_blank',
-          description: ['Práctica de páginas web simples con HTML puro'],
-          preview: '/assets/tareas/lab3.png',
-          technologies: ['HTML'],
-          githubLink: 'https://github.com/dpatzan2/Lab3-web'
-        },
         {
           id: 'lab4',
           name: 'Lab 4: CSS only',
@@ -271,6 +218,19 @@ export const projectsData: ProjectsData = {
           preview: '/assets/tareas/proyecto1.png',
           technologies: ['React', 'TailwindCSS', 'JavaScript', 'JSX', 'HTML'],
           githubLink: 'https://github.com/dpatzan2/Proyecto-1-web'
+        },
+        {
+          id: 'proyecto-software',
+          name: 'Gestión de flujos bpm para Adium',
+          type: 'project',
+          icon: '',
+          status: 'completado',
+          priority: 'alta',
+          target: '_blank',
+          description: ['Desarrollo de un gestor de flujos BPM para Adium, en el cual se pueden crear flujos de trabajo para automatizar procesos, aprobar mediamentos nuevos, aprobar vacaciones de un emepleado, gestionar departamentos, roles y grupos de aprobacion.'],
+          preview: '/assets/tareas/proyecto2.png',
+          technologies: ['React', 'TailwindCSS', 'C#', 'TSX', 'SQLServer', 'Docker', '. NET Core', 'Rest API'],
+          githubLink: 'https://github.com/Fluentis-BPM'
         }
       ]
     },
@@ -341,7 +301,7 @@ export interface Project {
 }
 
 export const projects: Project[] = projectsData.folders
-  .find(folder => folder.id === 'tareas-clase')?.items
+  .find(folder => folder.id === 'proyectos-universitarios')?.items
   .filter(item => item.link)
   .map(item => ({
     id: item.id,
