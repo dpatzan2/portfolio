@@ -3,7 +3,7 @@
 Portafolio personal desarrollado con Astro, este proyecto muestra mis trabajos, proyectos personales y casos de estudio de UX/UI, ver portafolio en linea: [Portafolio](https://23525.dernait.my/).
 
 
-## 🚀 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```text
 /
@@ -19,14 +19,14 @@ Portafolio personal desarrollado con Astro, este proyecto muestra mis trabajos, 
 └── package.json
 ```
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Astro**: Framework principal
 - **TailwindCSS**: Estilos y diseño responsive
 - **TypeScript**: Tipado estático
 - **Ubuntu Fonts**: Fuente oficial de Ubuntu para mayor autenticidad
 
-## 🧞 Comandos
+##  Comandos
 
 Todos los comandos se ejecutan desde la raíz del proyecto:
 

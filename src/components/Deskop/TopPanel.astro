@@ -214,9 +214,8 @@
     </div>
   </div>
 
-  <!-- Right side - System tray -->
-  <div class="flex items-center gap-2">
-    <!-- Date/Time -->
+  <!-- Date/Time with Calendar Dropdown -->
+  <div class="calendar-container relative">
     <button
       id="datetime-btn"
       class="hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
@@ -224,74 +223,132 @@
       <span id="datetime-display">Cargando...</span>
     </button>
 
-    <!-- System icons -->
-    <div class="flex items-center gap-1">
-      <!-- Volume -->
-      <button
-        class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-        title="Volumen"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path
-            d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path
-            d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg
+    <!-- Calendar Dropdown -->
+    <div
+      id="calendar-dropdown"
+      class="hidden absolute top-full right-0 mt-1 bg-ubuntu-header rounded-xl shadow-2xl border border-white/10 p-4 z-50 min-w-72"
+    >
+      <div class="calendar-header flex items-center justify-between mb-4">
+        <button
+          id="prev-month"
+          class="p-1 hover:bg-white/10 rounded transition-colors"
         >
-      </button>
-      <!-- Battery -->
-      <button
-        class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-        title="Batería: 100%"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><rect x="1" y="6" width="18" height="12" rx="2"></rect><line
-            x1="23"
-            x2="23"
-            y1="10"
-            y2="14"></line></svg
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg
+          >
+        </button>
+        <span id="calendar-month-year" class="text-white font-medium"></span>
+        <button
+          id="next-month"
+          class="p-1 hover:bg-white/10 rounded transition-colors"
         >
-      </button>
-      <!-- Power -->
-      <button
-        id="power-btn"
-        class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-        title="Apagar"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line
-            x1="12"
-            x2="12"
-            y1="2"
-            y2="12"></line></svg
-        >
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg
+          >
+        </button>
+      </div>
+
+      <div class="calendar-weekdays grid grid-cols-7 gap-1 mb-2">
+        <span class="text-center text-white/50 text-xs py-1">Do</span>
+        <span class="text-center text-white/50 text-xs py-1">Lu</span>
+        <span class="text-center text-white/50 text-xs py-1">Ma</span>
+        <span class="text-center text-white/50 text-xs py-1">Mi</span>
+        <span class="text-center text-white/50 text-xs py-1">Ju</span>
+        <span class="text-center text-white/50 text-xs py-1">Vi</span>
+        <span class="text-center text-white/50 text-xs py-1">Sá</span>
+      </div>
+
+      <div id="calendar-days" class="grid grid-cols-7 gap-1">
+        <!-- Days will be inserted here -->
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-white/10">
+        <div class="text-center">
+          <span id="calendar-full-date" class="text-white/70 text-sm"></span>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- System icons -->
+  <div class="flex items-center gap-1">
+    <!-- Volume -->
+    <button
+      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
+      title="Volumen"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path
+          d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path
+          d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg
+      >
+    </button>
+    <!-- Battery -->
+    <button
+      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
+      title="Batería: 100%"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><rect x="1" y="6" width="18" height="12" rx="2"></rect><line
+          x1="23"
+          x2="23"
+          y1="10"
+          y2="14"></line></svg
+      >
+    </button>
+    <!-- Power -->
+    <button
+      id="power-btn"
+      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
+      title="Apagar"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line
+          x1="12"
+          x2="12"
+          y1="2"
+          y2="12"></line></svg
+      >
+    </button>
   </div>
 </div>
 
@@ -368,6 +425,10 @@
     animation: menuSlide 0.15s ease-out;
   }
 
+  #calendar-dropdown {
+    animation: menuSlide 0.15s ease-out;
+  }
+
   @keyframes menuSlide {
     from {
       opacity: 0;
@@ -416,6 +477,131 @@
 
   updateDateTime();
   setInterval(updateDateTime, 1000);
+
+  // Calendar functionality
+  let currentCalendarDate = new Date();
+  const calendarDropdown = document.getElementById("calendar-dropdown");
+  const datetimeBtn = document.getElementById("datetime-btn");
+  const calendarDays = document.getElementById("calendar-days");
+  const calendarMonthYear = document.getElementById("calendar-month-year");
+  const calendarFullDate = document.getElementById("calendar-full-date");
+  const prevMonthBtn = document.getElementById("prev-month");
+  const nextMonthBtn = document.getElementById("next-month");
+
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  const dayNames = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+  ];
+
+  function renderCalendar() {
+    if (!calendarDays || !calendarMonthYear || !calendarFullDate) return;
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const today = new Date();
+
+    // Update header
+    calendarMonthYear.textContent = `${monthNames[month]} ${year}`;
+
+    // Update full date
+    calendarFullDate.textContent = `${dayNames[today.getDay()]}, ${today.getDate()} de ${monthNames[today.getMonth()]} de ${today.getFullYear()}`;
+
+    // Get first day of month and total days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+    calendarDays.innerHTML = "";
+
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const day = document.createElement("span");
+      day.className = "text-center text-white/30 text-xs py-1.5 rounded";
+      day.textContent = String(daysInPrevMonth - i);
+      calendarDays.appendChild(day);
+    }
+
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const day = document.createElement("span");
+      const isToday =
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear();
+      day.className = `text-center text-xs py-1.5 rounded cursor-pointer transition-colors ${
+        isToday
+          ? "bg-ubuntu-orange text-white font-bold"
+          : "text-white hover:bg-white/10"
+      }`;
+      day.textContent = String(i);
+      calendarDays.appendChild(day);
+    }
+
+    // Next month days
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = totalCells > 35 ? 42 - totalCells : 35 - totalCells;
+    for (let i = 1; i <= remainingCells; i++) {
+      const day = document.createElement("span");
+      day.className = "text-center text-white/30 text-xs py-1.5 rounded";
+      day.textContent = String(i);
+      calendarDays.appendChild(day);
+    }
+  }
+
+  // Toggle calendar
+  datetimeBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // Close other dropdowns
+    document
+      .querySelectorAll(".menu-dropdown")
+      .forEach((d) => d.classList.add("hidden"));
+
+    currentCalendarDate = new Date();
+    renderCalendar();
+    calendarDropdown?.classList.toggle("hidden");
+  });
+
+  // Navigation
+  prevMonthBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+  });
+
+  nextMonthBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  // Close calendar on outside click
+  document.addEventListener("click", (e) => {
+    if (
+      !calendarDropdown?.contains(e.target as Node) &&
+      e.target !== datetimeBtn
+    ) {
+      calendarDropdown?.classList.add("hidden");
+    }
+  });
 
   // Menu handling
   document.querySelectorAll(".menu-container").forEach((container) => {

@@ -22,7 +22,7 @@ export const profileData: ProfileData = {
   name: "Diego Fernando Patzán Marroquín",
   email: "df.patzan@gmail.com",
   description: [
-    "Estudiante de Ingeniería en Ciencias de la Computación en la universidad del valle de Guatemala, con pasión por el desarrollo web y las tecnologías emergentes.",
+    "Estudiante de Ingeniería en Ciencias de la Computación en la universidad del valle de Guatemala, en la busca aprender sobre nuevas tecnologías y mejorar mis habilidades.",
     "Siempre en busca de nuevos desafíos que me permitan crecer profesionalmente."
   ],
   // Para agregar una nueva habilidad, solo agrega el nombre aquí
@@ -41,7 +41,9 @@ export const profileData: ProfileData = {
     createSkill("SQL"),
     createSkill("MongoDB"),
     createSkill("Flutter"),
-    createSkill("Dart")
+    createSkill("Dart"),
+    createSkill("React native"),
+    createSkill(".NET Core")
   ],
   softSkills: [
     "Trabajo en equipo",
