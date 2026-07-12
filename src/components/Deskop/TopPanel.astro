@@ -1,6 +1,3 @@
----
-// Top Panel Component - Ubuntu-style top bar with functional menus
----
 
 <div
   class="fixed top-0 left-0 right-0 h-7 bg-ubuntu-panel flex items-center justify-between px-2.5 text-white text-xs z-50"
@@ -13,7 +10,7 @@
       class="flex items-center hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
     >
       <div class="w-3 h-3 bg-ubuntu-orange rounded-full mr-1.5"></div>
-      <span>Activities</span>
+      <span>Actividades</span>
     </button>
 
     <!-- App Menu (context-sensitive) -->
@@ -22,7 +19,7 @@
       <div class="menu-container relative">
         <button
           class="menu-btn hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
-          >Files</button
+          >Archivos</button
         >
         <div
           class="menu-dropdown hidden absolute top-full left-0 mt-1 bg-ubuntu-header rounded-lg shadow-xl border border-white/10 py-1 min-w-40 z-50"
@@ -82,7 +79,7 @@
       <div class="menu-container relative">
         <button
           class="menu-btn hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
-          >View</button
+          >Vista</button
         >
         <div
           class="menu-dropdown hidden absolute top-full left-0 mt-1 bg-ubuntu-header rounded-lg shadow-xl border border-white/10 py-1 min-w-44 z-50"
@@ -148,6 +145,35 @@
             >
             Visor de Documentos
           </button>
+          <button class="menu-item" data-action="open-gedit">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              ><path d="M12 20h9"></path><path
+                d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg
+            >
+            Editor de texto
+          </button>
+          <button class="menu-item" data-action="open-settings">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              ><circle cx="12" cy="12" r="3"></circle><path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+              ></path></svg
+            >
+            Configuración
+          </button>
         </div>
       </div>
 
@@ -155,7 +181,7 @@
       <div class="menu-container relative">
         <button
           class="menu-btn hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
-          >Help</button
+          >Ayuda</button
         >
         <div
           class="menu-dropdown hidden absolute top-full left-0 mt-1 bg-ubuntu-header rounded-lg shadow-xl border border-white/10 py-1 min-w-48 z-50"
@@ -282,73 +308,72 @@
     </div>
   </div>
 
-  <!-- System icons -->
-  <div class="flex items-center gap-1">
-    <!-- Volume -->
+  <!-- Menú de sistema (quick settings) -->
+  <div class="system-menu-container relative">
     <button
-      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-      title="Volumen"
+      id="system-status-btn"
+      class="flex items-center gap-1.5 hover:bg-white/10 px-2 py-1 rounded cursor-pointer transition-colors"
+      title="Menú de sistema"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path
-          d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path
-          d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg
-      >
+      <!-- Red -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>
+      <!-- Volumen -->
+      <svg id="status-volume-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      <!-- Batería -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" x2="23" y1="10" y2="14"/></svg>
     </button>
-    <!-- Battery -->
-    <button
-      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-      title="Batería: 100%"
+
+    <div
+      id="system-menu"
+      class="hidden absolute top-full right-0 mt-1 bg-ubuntu-header rounded-xl shadow-2xl border border-white/10 p-4 z-50 w-72"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><rect x="1" y="6" width="18" height="12" rx="2"></rect><line
-          x1="23"
-          x2="23"
-          y1="10"
-          y2="14"></line></svg
-      >
-    </button>
-    <!-- Power -->
-    <button
-      id="power-btn"
-      class="system-btn hover:bg-white/10 p-1 rounded cursor-pointer transition-colors"
-      title="Apagar"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line
-          x1="12"
-          x2="12"
-          y1="2"
-          y2="12"></line></svg
-      >
-    </button>
+      <!-- Volumen -->
+      <div class="flex items-center gap-3 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <input
+          id="volume-slider"
+          type="range"
+          min="0"
+          max="100"
+          value="70"
+          class="flex-1 accent-[#E95420] cursor-pointer"
+        />
+      </div>
+
+      <!-- Accesos rápidos -->
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button id="qs-theme" class="qs-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <span id="qs-theme-label">Tema claro</span>
+        </button>
+        <button id="qs-wallpaper" class="qs-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <span>Fondo</span>
+        </button>
+        <button id="qs-settings" class="qs-btn col-span-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Configuración</span>
+        </button>
+      </div>
+
+      <div class="h-px bg-white/10 mb-3"></div>
+
+      <!-- Energía -->
+      <div class="flex justify-around">
+        <button id="qs-suspend" class="qs-power" title="Suspender">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <span>Suspender</span>
+        </button>
+        <button id="qs-restart" class="qs-power" title="Reiniciar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          <span>Reiniciar</span>
+        </button>
+        <button id="qs-shutdown" class="qs-power" title="Apagar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" x2="12" y1="2" y2="12"/></svg>
+          <span>Apagar</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -446,6 +471,18 @@
 
   .menu-divider {
     @apply h-px bg-white/10 my-1;
+  }
+
+  #system-menu {
+    animation: menuSlide 0.15s ease-out;
+  }
+
+  .qs-btn {
+    @apply flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-white/10 hover:bg-ubuntu-orange/70 text-white text-xs transition-colors cursor-pointer;
+  }
+
+  .qs-power {
+    @apply flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10 text-white/80 hover:text-white text-[10px] transition-colors cursor-pointer;
   }
 </style>
 
@@ -645,9 +682,21 @@
           wm?.openWindow("pdfviewer");
           break;
         case "close-all":
-          ["profile", "projects", "terminal", "pdfviewer"].forEach((id) =>
-            wm?.closeWindow(id),
-          );
+          [
+            "profile",
+            "projects",
+            "terminal",
+            "pdfviewer",
+            "calculator",
+            "settings",
+            "gedit",
+          ].forEach((id) => wm?.closeWindow(id));
+          break;
+        case "open-settings":
+          wm?.openWindow("settings");
+          break;
+        case "open-gedit":
+          wm?.openWindow("gedit");
           break;
         case "about":
           document.getElementById("about-dialog")?.classList.remove("hidden");
@@ -691,15 +740,31 @@
     states.forEach((state: any, id: string) => {
       if (!state.isOpen || state.isMinimized) return;
 
+      const title = state.element.dataset.windowTitle || id;
+      const rect = state.element.getBoundingClientRect();
+      const scale = Math.min(248 / rect.width, 136 / rect.height);
+
+      // Miniatura real: clon escalado de la ventana
+      const clone = state.element.cloneNode(true) as HTMLElement;
+      clone.classList.remove("maximized", "minimized", "focused");
+      clone.removeAttribute("id");
+      clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+      clone.style.cssText = `position:absolute; left:0; top:0; width:${rect.width}px; height:${rect.height}px; transform:scale(${scale}); transform-origin:top left; pointer-events:none; display:block; animation:none;`;
+
       const preview = document.createElement("div");
       preview.className = "window-preview cursor-pointer group";
-      preview.innerHTML = `
-        <div class="w-64 h-40 bg-ubuntu-window rounded-lg border-2 border-transparent group-hover:border-ubuntu-orange transition-colors overflow-hidden shadow-xl">
-          <div class="bg-ubuntu-header p-2 text-xs text-white">${state.element.dataset.windowTitle || id}</div>
-          <div class="p-2 text-white/50 text-xs">Vista previa</div>
-        </div>
-        <p class="text-white text-center mt-2 text-sm">${state.element.dataset.windowTitle || id}</p>
-      `;
+
+      const frame = document.createElement("div");
+      frame.className =
+        "relative w-64 h-36 rounded-lg border-2 border-transparent group-hover:border-ubuntu-orange transition-colors overflow-hidden shadow-xl bg-black/30";
+      frame.appendChild(clone);
+
+      const label = document.createElement("p");
+      label.className = "text-white text-center mt-2 text-sm";
+      label.textContent = title;
+
+      preview.appendChild(frame);
+      preview.appendChild(label);
 
       preview.addEventListener("click", () => {
         hideActivities();
@@ -720,12 +785,26 @@
 
   function hideActivities() {
     activitiesOverlay?.classList.add("opacity-0");
-    setTimeout(() => activitiesOverlay?.classList.add("hidden"), 300);
+    setTimeout(() => {
+      activitiesOverlay?.classList.add("hidden");
+      // Limpiar clones para no dejar ventanas duplicadas en el DOM
+      if (windowsPreview) windowsPreview.innerHTML = "";
+    }, 300);
   }
 
   activitiesOverlay?.addEventListener("click", (e) => {
     if (e.target === activitiesOverlay) hideActivities();
   });
+
+  // Exponer para atajos de teclado (tecla Super)
+  (window as any).activities = {
+    show: showActivities,
+    hide: hideActivities,
+    toggle: () => {
+      if (activitiesOverlay?.classList.contains("hidden")) showActivities();
+      else hideActivities();
+    },
+  };
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -734,8 +813,59 @@
     }
   });
 
-  // Power button (just for show)
-  document.getElementById("power-btn")?.addEventListener("click", () => {
-    alert("¡Gracias por visitar mi portfolio!");
+  // Menú de sistema (quick settings)
+  const systemBtn = document.getElementById("system-status-btn");
+  const systemMenu = document.getElementById("system-menu");
+
+  systemBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document
+      .querySelectorAll(".menu-dropdown")
+      .forEach((d) => d.classList.add("hidden"));
+    calendarDropdown?.classList.add("hidden");
+    systemMenu?.classList.toggle("hidden");
+    updateThemeLabel();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!systemMenu?.contains(e.target as Node) && e.target !== systemBtn) {
+      systemMenu?.classList.add("hidden");
+    }
+  });
+
+  function updateThemeLabel() {
+    const label = document.getElementById("qs-theme-label");
+    const isLight = document.documentElement.classList.contains("light");
+    if (label) label.textContent = isLight ? "Tema oscuro" : "Tema claro";
+  }
+
+  document.getElementById("qs-theme")?.addEventListener("click", () => {
+    const ds = (window as any).desktopSettings;
+    ds?.setTheme(ds.getTheme() === "light" ? "dark" : "light");
+    updateThemeLabel();
+  });
+
+  document.getElementById("qs-wallpaper")?.addEventListener("click", () => {
+    (window as any).desktopSettings?.nextWallpaper();
+  });
+
+  document.getElementById("qs-settings")?.addEventListener("click", () => {
+    (window as any).windowManager?.openWindow("settings");
+    systemMenu?.classList.add("hidden");
+  });
+
+  document.getElementById("qs-suspend")?.addEventListener("click", () => {
+    systemMenu?.classList.add("hidden");
+    (window as any).session?.suspend();
+  });
+
+  document.getElementById("qs-restart")?.addEventListener("click", () => {
+    systemMenu?.classList.add("hidden");
+    (window as any).session?.restart();
+  });
+
+  document.getElementById("qs-shutdown")?.addEventListener("click", () => {
+    systemMenu?.classList.add("hidden");
+    (window as any).session?.shutdown();
   });
 </script>

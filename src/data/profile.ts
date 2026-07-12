@@ -43,7 +43,8 @@ export const profileData: ProfileData = {
     createSkill("Flutter"),
     createSkill("Dart"),
     createSkill("React native"),
-    createSkill(".NET Core")
+    createSkill(".NET Core"),
+    createSkill("MySQL")
   ],
   softSkills: [
     "Trabajo en equipo",

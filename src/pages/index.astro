@@ -5,16 +5,27 @@ import TopPanel from "../components/Deskop/TopPanel.astro";
 import Dock from "../components/Deskop/Dock.astro";
 import WindowsContainer from "../components/Deskop/WindowsContainer.astro";
 import BootScreen from "../components/BootScreen/BootScreen.astro";
+import DesktopIcons from "../components/Deskop/DesktopIcons.astro";
+import ContextMenu from "../components/Deskop/ContextMenu.astro";
+import SessionScreens from "../components/Session/SessionScreens.astro";
+import Notifications from "../components/Notifications/Notifications.astro";
 ---
 
 <Layout title="Diego Patzán | Portfolio">
   <!-- Ubuntu Boot Screen -->
   <BootScreen />
-  
+
+  <!-- Lock screen y pantallas de apagado/suspensión -->
+  <SessionScreens />
+
   <!-- Main Desktop -->
-  <div class="h-screen bg-ubuntu-desktop bg-cover bg-center relative">
+  <div id="desktop" class="h-screen bg-ubuntu-desktop bg-cover bg-center relative">
     <TopPanel />
     <Dock />
+    <DesktopIcons />
     <WindowsContainer />
   </div>
+
+  <ContextMenu />
+  <Notifications />
 </Layout>

@@ -1,0 +1,57 @@
+<!-- Contenedor de notificaciones estilo GNOME (arriba-centro) -->
+<div
+  id="notifications-container"
+  class="fixed top-9 left-1/2 -translate-x-1/2 z-[99980] flex flex-col gap-2 items-center pointer-events-none"
+>
+</div>
+
+<!-- Global: los toasts se crean por JS y no reciben el scope de Astro -->
+<style is:global>
+  .gnome-toast {
+    animation: toastIn 0.25s ease-out;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .gnome-toast.leaving {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  @keyframes toastIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  const container = document.getElementById("notifications-container")!;
+
+  (window as any).notify = (title: string, message = "") => {
+    const toast = document.createElement("div");
+    toast.className =
+      "gnome-toast pointer-events-auto bg-[#303030]/95 text-white rounded-xl shadow-2xl border border-white/10 px-4 py-3 flex items-start gap-3 max-w-sm cursor-pointer";
+    toast.innerHTML = `
+      <div class="w-8 h-8 rounded-full bg-ubuntu-orange flex items-center justify-center shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-medium">${title}</p>
+        ${message ? `<p class="text-xs text-white/70 mt-0.5">${message}</p>` : ""}
+      </div>
+    `;
+
+    const dismiss = () => {
+      toast.classList.add("leaving");
+      setTimeout(() => toast.remove(), 300);
+    };
+    toast.addEventListener("click", dismiss);
+    container.appendChild(toast);
+    setTimeout(dismiss, 4500);
+  };
+</script>

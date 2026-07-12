@@ -5,9 +5,12 @@ import ProjectsFileSystem from '../Projects/ProjectsFileSystem.astro';
 import TerminalContent from '../Terminal/TerminalContent.astro';
 import PDFViewerContent from '../PDFViewer/PDFViewerContent.astro';
 import CalculatorContent from '../Calculator/CalculatorContent.astro';
+import SettingsContent from '../Settings/SettingsContent.astro';
+import GeditContent from '../Gedit/GeditContent.astro';
 ---
 
-<div id="windows-container" class="fixed top-7 left-0 md:left-17 right-0 bottom-14 md:bottom-0 overflow-hidden">
+<!-- pointer-events-none: deja pasar clicks del fondo a los iconos del escritorio; las ventanas los reactivan -->
+<div id="windows-container" class="fixed top-7 left-0 md:left-17 right-0 bottom-14 md:bottom-0 overflow-hidden pointer-events-none">
   <!-- Profile Window -->
   <Window title="Perfil" windowId="profile">
     <ProfileContent />
@@ -32,6 +35,23 @@ import CalculatorContent from '../Calculator/CalculatorContent.astro';
   <Window title="Calculadora" windowId="calculator" startOpen={false}>
     <CalculatorContent />
   </Window>
+
+  <!-- Settings Window (starts closed) -->
+  <Window title="Configuración" windowId="settings" startOpen={false}>
+    <SettingsContent />
+  </Window>
+
+  <!-- Gedit Window (starts closed) -->
+  <Window title="léeme.txt — Editor de texto" windowId="gedit" startOpen={false}>
+    <GeditContent />
+  </Window>
+
+  <!-- Preview de snapping -->
+  <div
+    id="snap-preview"
+    class="hidden absolute z-[9998] rounded-lg border-2 border-ubuntu-orange bg-ubuntu-orange/20 pointer-events-none transition-all duration-100"
+  >
+  </div>
 </div>
 
 <script>
@@ -296,12 +316,63 @@ import CalculatorContent from '../Calculator/CalculatorContent.astro';
     setupResize(el, state);
   }
 
+  // Snapping estilo GNOME: arrastrar a los bordes acomoda la ventana
+  type SnapZone = 'left' | 'right' | 'top' | null;
+
+  function getSnapZone(e: MouseEvent): SnapZone {
+    const container = document.getElementById('windows-container');
+    if (!container) return null;
+    const rect = container.getBoundingClientRect();
+    if (e.clientY <= rect.top + 4) return 'top';
+    if (e.clientX <= rect.left + 8) return 'left';
+    if (e.clientX >= rect.right - 8) return 'right';
+    return null;
+  }
+
+  function showSnapPreview(zone: SnapZone) {
+    const preview = document.getElementById('snap-preview');
+    const container = document.getElementById('windows-container');
+    if (!preview || !container) return;
+
+    if (!zone) {
+      preview.classList.add('hidden');
+      return;
+    }
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const half = Math.floor(w / 2);
+    preview.style.top = '0px';
+    preview.style.height = `${h}px`;
+    preview.style.left = zone === 'right' ? `${w - half}px` : '0px';
+    preview.style.width = zone === 'top' ? `${w}px` : `${half}px`;
+    preview.classList.remove('hidden');
+  }
+
+  function applySnap(state: WindowState, zone: SnapZone) {
+    const container = document.getElementById('windows-container');
+    if (!container || !zone) return;
+
+    if (zone === 'top') {
+      if (!state.isMaximized) toggleMaximize(state.id);
+      return;
+    }
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const half = Math.floor(w / 2);
+    state.position = { x: zone === 'left' ? 0 : w - half, y: 0 };
+    state.size = { width: half, height: h };
+    applyWindowState(state);
+  }
+
   function setupDrag(el: HTMLElement, header: HTMLElement, state: WindowState) {
     let isDragging = false;
     let startX = 0;
     let startY = 0;
     let startPosX = 0;
     let startPosY = 0;
+    let snapZone: SnapZone = null;
 
     header?.addEventListener('mousedown', (e) => {
       if ((e.target as HTMLElement).closest('.window-btn')) return;
@@ -328,12 +399,20 @@ import CalculatorContent from '../Calculator/CalculatorContent.astro';
 
       el.style.left = `${state.position.x}px`;
       el.style.top = `${state.position.y}px`;
+
+      snapZone = getSnapZone(e);
+      showSnapPreview(snapZone);
     });
 
     document.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
         header.style.cursor = 'grab';
+        showSnapPreview(null);
+        if (snapZone) {
+          applySnap(state, snapZone);
+          snapZone = null;
+        }
       }
     });
   }
@@ -434,6 +513,34 @@ import CalculatorContent from '../Calculator/CalculatorContent.astro';
     });
   }
 
+  // Atajos de teclado estilo GNOME
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+Alt+T: abrir terminal
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 't') {
+      e.preventDefault();
+      openWindow('terminal');
+      return;
+    }
+
+    // Alt+Tab: ciclar entre ventanas abiertas
+    if (e.altKey && e.key === 'Tab') {
+      e.preventDefault();
+      const openIds = Array.from(windowStates.values())
+        .filter((s) => s.isOpen && !s.isMinimized)
+        .map((s) => s.id);
+      if (openIds.length < 2) return;
+      const current = activeWindowId ? openIds.indexOf(activeWindowId) : -1;
+      focusWindow(openIds[(current + 1) % openIds.length]);
+      return;
+    }
+
+    // Super: vista de Actividades
+    if (e.key === 'Meta') {
+      e.preventDefault();
+      (window as any).activities?.toggle();
+    }
+  });
+
   // Exponer funciones globalmente para el dock
   (window as any).windowManager = {
     toggleWindow,
@@ -442,6 +549,7 @@ import CalculatorContent from '../Calculator/CalculatorContent.astro';
     closeWindow,
     minimizeWindow,
     restoreWindow,
+    toggleMaximize,
     getWindowStates: () => windowStates
   };
 

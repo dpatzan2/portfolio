@@ -2,3 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ubuntu-panel: rgba(0, 0, 0, 0.85);
+  --ubuntu-window: rgba(37, 37, 37, 0.95);
+  --ubuntu-header: rgba(48, 48, 48, 0.95);
+}
+
+/* ponytail: tema claro via overrides de superficie/texto en vez de reescribir cada componente;
+   si algún componente lo necesita distinto, marcarlo con .keep-dark */
+html.light {
+  --ubuntu-window: rgba(250, 250, 250, 0.98);
+  --ubuntu-header: rgba(222, 221, 218, 0.98);
+}
+
+html.light .window-header .text-white {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+html.light .window-content {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+html.light .window-content [class*="text-white"]:not(.keep-dark, .keep-dark *),
+html.light .window-content [class*="text-gray-1"]:not(.keep-dark, .keep-dark *),
+html.light .window-content [class*="text-gray-2"]:not(.keep-dark, .keep-dark *),
+html.light .window-content [class*="text-gray-3"]:not(.keep-dark, .keep-dark *),
+html.light .window-content [class*="text-gray-4"]:not(.keep-dark, .keep-dark *) {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+html.light .window-content [class*="bg-white/"]:not(.keep-dark, .keep-dark *) {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+html.light .window-content [class*="border-white/"]:not(.keep-dark, .keep-dark *) {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Clases scoped con @apply text-* que el selector por atributo no alcanza */
+html.light .window-content .description-item,
+html.light .window-content .skill-tag,
+html.light .window-content .soft-skill-tag {
+  color: rgba(0, 0, 0, 0.8);
+}

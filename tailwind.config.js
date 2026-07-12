@@ -9,9 +9,9 @@ export default {
         ubuntu: {
           orange: '#E95420',
           dark: '#2C001E',
-          panel: 'rgba(0, 0, 0, 0.85)',
-          window: 'rgba(37, 37, 37, 0.95)',
-          header: 'rgba(48, 48, 48, 0.95)',
+          panel: 'var(--ubuntu-panel)',
+          window: 'var(--ubuntu-window)',
+          header: 'var(--ubuntu-header)',
         }
       },
       fontFamily: {

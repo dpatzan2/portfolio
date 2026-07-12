@@ -1,0 +1,91 @@
+<!-- Iconos del escritorio: doble clic para abrir -->
+<div
+  id="desktop-icons"
+  class="absolute top-9 left-2 md:left-20 flex flex-col gap-1 select-none"
+>
+  <button class="desktop-icon" data-open="pdfviewer" title="CV Diego Patzán">
+    <div class="icon-glyph bg-red-600/90">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <span>CV.pdf</span>
+  </button>
+
+  <button class="desktop-icon" data-open="projects" title="Proyectos">
+    <div class="icon-glyph bg-ubuntu-orange">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+    </div>
+    <span>Proyectos</span>
+  </button>
+
+  <button class="desktop-icon" data-open="gedit" title="léeme.txt">
+    <div class="icon-glyph bg-gray-500/90">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+    </div>
+    <span>léeme.txt</span>
+  </button>
+</div>
+
+<style>
+  .desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 84px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .desktop-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .desktop-icon.selected {
+    background: rgba(233, 84, 32, 0.35);
+    border-color: rgba(233, 84, 32, 0.6);
+  }
+
+  .desktop-icon span {
+    font-size: 0.72rem;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .icon-glyph {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+</style>
+
+<script>
+  const icons = document.querySelectorAll<HTMLElement>(".desktop-icon");
+
+  icons.forEach((icon) => {
+    icon.addEventListener("click", (e) => {
+      e.stopPropagation();
+      icons.forEach((i) => i.classList.remove("selected"));
+      icon.classList.add("selected");
+    });
+    icon.addEventListener("dblclick", () => {
+      (window as any).windowManager?.openWindow(icon.dataset.open);
+    });
+  });
+
+  // Clic en el fondo deselecciona
+  document.addEventListener("click", (e) => {
+    if (!(e.target as HTMLElement).closest(".desktop-icon")) {
+      icons.forEach((i) => i.classList.remove("selected"));
+    }
+  });
+</script>

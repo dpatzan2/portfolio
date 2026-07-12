@@ -1,0 +1,67 @@
+---
+import { profileData } from "../../data/profile";
+
+const readmeText = `léeme.txt — Sobre este portfolio
+=================================
+
+Hola, soy ${profileData.name}.
+
+Estudiante de Ingeniería en Ciencias de la Computación en la
+Universidad del Valle de Guatemala. Me gusta construir cosas:
+webs, apps móviles y experimentos como este escritorio Ubuntu
+hecho con Astro, TailwindCSS y TypeScript (sin frameworks de UI).
+
+Qué puedes hacer aquí:
+ * Abrir mis proyectos desde el dock o los iconos del escritorio.
+ * Ver mi CV en el visor de documentos.
+ * Jugar con la terminal (escribe 'help').
+ * Cambiar el fondo y el tema en Configuración.
+ * Apagar el sistema... y volver a encenderlo.
+
+Contacto: ${profileData.email}
+GitHub:   https://github.com/dpatzan2
+
+Puedes editar este archivo, es tu sesión de invitado :)
+`;
+---
+
+<div class="gedit h-full flex flex-col -m-5">
+  <!-- Barra de pestaña estilo gedit -->
+  <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/10 bg-white/5 text-xs shrink-0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span>léeme.txt</span>
+    <span id="gedit-modified" class="hidden opacity-60">●</span>
+    <span class="ml-auto opacity-50">~/Escritorio</span>
+  </div>
+
+  <textarea
+    id="gedit-textarea"
+    class="flex-1 w-full bg-transparent p-4 font-mono text-sm leading-relaxed outline-none resize-none"
+    spellcheck="false">{readmeText}</textarea>
+
+  <!-- Barra de estado -->
+  <div class="flex items-center justify-end gap-4 px-3 py-1 border-t border-white/10 text-xs opacity-60 shrink-0">
+    <span id="gedit-position">Ln 1, Col 1</span>
+    <span>Texto plano</span>
+    <span>UTF-8</span>
+  </div>
+</div>
+
+<script>
+  const textarea = document.getElementById("gedit-textarea") as HTMLTextAreaElement | null;
+  const position = document.getElementById("gedit-position");
+  const modified = document.getElementById("gedit-modified");
+
+  function updatePosition() {
+    if (!textarea || !position) return;
+    const upToCursor = textarea.value.slice(0, textarea.selectionStart);
+    const lines = upToCursor.split("\n");
+    position.textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
+  }
+
+  textarea?.addEventListener("input", () => {
+    modified?.classList.remove("hidden");
+    updatePosition();
+  });
+  ["keyup", "click"].forEach((ev) => textarea?.addEventListener(ev, updatePosition));
+</script>

@@ -1,0 +1,167 @@
+---
+import { profileData } from "../../data/profile";
+const firstName = profileData.name.split(" ").slice(0, 2).join(" ");
+---
+
+<!-- Lock Screen (GDM) -->
+<div id="lock-screen" class="session-screen z-[99990] flex">
+  <div class="flex flex-col items-center gap-2 select-none">
+    <div id="lock-clock" class="text-white text-7xl md:text-8xl font-light tracking-wide">
+      00:00
+    </div>
+    <div id="lock-date" class="text-white/80 text-lg mb-10"></div>
+
+    <img
+      src="/assets/profile.jpg"
+      alt="Avatar"
+      class="w-24 h-24 rounded-full object-cover border-2 border-white/30 shadow-2xl"
+    />
+    <div class="text-white text-xl font-medium mt-2">{firstName}</div>
+    <div class="text-white/60 text-sm mt-6 animate-pulse">
+      Presiona Enter o haz clic para entrar
+    </div>
+  </div>
+</div>
+
+<!-- Shutdown / Restart Screen -->
+<div id="shutdown-screen" class="session-screen z-[100000] hidden flex-col gap-8">
+  <img src="/assets/logo.png" alt="Logo" class="w-28 h-28 object-contain" />
+  <div class="flex gap-3">
+    <span class="shutdown-dot"></span>
+    <span class="shutdown-dot" style="animation-delay: 0.2s"></span>
+    <span class="shutdown-dot" style="animation-delay: 0.4s"></span>
+  </div>
+  <p id="shutdown-msg" class="text-white/60 text-sm">Apagando el sistema...</p>
+</div>
+
+<!-- Powered Off Screen -->
+<div id="poweroff-screen" class="session-screen z-[100001] hidden cursor-pointer bg-black">
+  <div class="flex flex-col items-center gap-4 text-white/40 select-none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+      <line x1="12" x2="12" y1="2" y2="12"></line>
+    </svg>
+    <p class="text-sm">Haz clic para encender</p>
+  </div>
+</div>
+
+<!-- Suspend Screen -->
+<div id="suspend-screen" class="session-screen z-[100001] hidden cursor-pointer bg-black">
+</div>
+
+<style>
+  .session-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c001e 0%, #5e2750 50%, #77216f 100%);
+    transition: opacity 0.5s ease;
+  }
+
+  .session-screen.hidden {
+    display: none;
+  }
+
+  .session-screen.fading {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shutdown-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+    animation: shutdownPulse 1.2s infinite;
+  }
+
+  @keyframes shutdownPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+</style>
+
+<script>
+  const lockScreen = document.getElementById("lock-screen")!;
+  const shutdownScreen = document.getElementById("shutdown-screen")!;
+  const shutdownMsg = document.getElementById("shutdown-msg")!;
+  const poweroffScreen = document.getElementById("poweroff-screen")!;
+  const suspendScreen = document.getElementById("suspend-screen")!;
+
+  // Reloj del lock screen
+  function updateLockClock() {
+    const now = new Date();
+    const clock = document.getElementById("lock-clock");
+    const date = document.getElementById("lock-date");
+    if (clock)
+      clock.textContent = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    if (date)
+      date.textContent = now.toLocaleDateString("es-ES", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+  }
+  updateLockClock();
+  setInterval(updateLockClock, 10000);
+
+  let locked = true;
+
+  function unlock() {
+    if (!locked) return;
+    locked = false;
+    lockScreen.classList.add("fading");
+    setTimeout(() => {
+      lockScreen.classList.add("hidden");
+      (window as any).notify?.(
+        "Bienvenido",
+        "Explora el dock, haz click derecho en el escritorio o abre la terminal.",
+      );
+    }, 500);
+  }
+
+  lockScreen.addEventListener("click", unlock);
+  document.addEventListener("keydown", (e) => {
+    if (locked && e.key === "Enter") unlock();
+  });
+
+  function powerSequence(message: string, then: () => void) {
+    shutdownMsg.textContent = message;
+    shutdownScreen.classList.remove("hidden");
+    shutdownScreen.classList.add("fading");
+    requestAnimationFrame(() => shutdownScreen.classList.remove("fading"));
+    setTimeout(then, 2500);
+  }
+
+  (window as any).session = {
+    shutdown() {
+      powerSequence("Apagando el sistema...", () => {
+        poweroffScreen.classList.remove("hidden");
+      });
+    },
+    restart() {
+      // ponytail: reiniciar = recargar la página, el boot real se reproduce solo
+      powerSequence("Reiniciando...", () => location.reload());
+    },
+    suspend() {
+      suspendScreen.classList.remove("hidden");
+    },
+    lock() {
+      locked = true;
+      lockScreen.classList.remove("hidden", "fading");
+      updateLockClock();
+    },
+  };
+
+  poweroffScreen.addEventListener("click", () => location.reload());
+
+  function wakeUp() {
+    if (suspendScreen.classList.contains("hidden")) return;
+    suspendScreen.classList.add("hidden");
+    (window as any).notify?.("Sistema reanudado", "Bienvenido de vuelta.");
+  }
+  suspendScreen.addEventListener("click", wakeUp);
+  document.addEventListener("keydown", wakeUp);
+</script>

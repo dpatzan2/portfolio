@@ -1,28 +1,34 @@
 ---
-// Terminal Content Component - Simula una terminal Linux básica
-import { profileData } from '../../data/profile';
+import { profileData } from "../../data/profile";
 ---
 
-<div class="terminal-container h-full flex flex-col bg-[#300a24] font-mono text-sm">
+<div
+  class="terminal-container keep-dark h-full flex flex-col bg-[#300a24] font-mono text-sm"
+>
   <!-- Terminal Output -->
   <div id="terminal-output" class="flex-1 p-4 overflow-y-auto">
     <!-- Welcome Message -->
-    <pre class="text-[#E95420] mb-4">
+    <pre
+      class="text-[#E95420] mb-4">
  ____  ____       _                  
 |  _ \|  _ \ __ _| |_ ______ _ _ __  
 | | | | |_) / _` | __|_  / _` | '_ \ 
 | |_| |  __/ (_| | |_ / / (_| | | | |
 |____/|_|   \__,_|\__/___\__,_|_| |_|
     </pre>
-    <div class="text-green-400 mb-2">¡Bienvenido a la terminal de DPatzán Portfolio!</div>
-    <div class="text-gray-400 mb-4">Escribe 'help' para ver los comandos disponibles.</div>
+    <div class="text-green-400 mb-2">
+      ¡Bienvenido a la terminal de DPatzán Portfolio!
+    </div>
+    <div class="text-gray-400 mb-4">
+      Escribe 'help' para ver los comandos disponibles.
+    </div>
   </div>
-  
+
   <!-- Terminal Input -->
   <div class="flex items-center p-2 border-t border-white/10 bg-[#2c001e]">
     <span class="text-green-400 mr-2">guest@dpatzan:~$</span>
-    <input 
-      type="text" 
+    <input
+      type="text"
       id="terminal-input"
       class="flex-1 bg-transparent text-white outline-none caret-green-400"
       autocomplete="off"
@@ -36,94 +42,98 @@ import { profileData } from '../../data/profile';
   // Terminal State
   const commandHistory = [];
   let historyIndex = -1;
-  let currentPath = '/home/guest';
-  
+  let currentPath = "/home/guest";
+
   // DOM Elements
-  const output = document.getElementById('terminal-output');
-  const input = document.getElementById('terminal-input');
-  const promptElement = document.querySelector('.terminal-container .text-green-400');
-  
+  const output = document.getElementById("terminal-output");
+  const input = document.getElementById("terminal-input");
+  const promptElement = document.querySelector(
+    ".terminal-container .text-green-400",
+  );
+
   // Virtual File System - Tree structure
   const fileSystem = {
-    '/': {
-      type: 'dir',
+    "/": {
+      type: "dir",
       children: {
-        'home': {
-          type: 'dir',
+        home: {
+          type: "dir",
           children: {
-            'guest': {
-              type: 'dir',
+            guest: {
+              type: "dir",
               children: {
-                'about.txt': {
-                  type: 'file',
+                "about.txt": {
+                  type: "file",
                   content: `Nombre: ${profileData.name}
 Carné: ${profileData.carne}
 Email: ${profileData.email}
 
-${profileData.description.join('\n')}`
+${profileData.description.join("\n")}`,
                 },
-                'skills.txt': {
-                  type: 'file',
+                "skills.txt": {
+                  type: "file",
                   content: `=== Habilidades Técnicas ===
-${profileData.skills.map(s => `• ${s.name}`).join('\n')}
+${profileData.skills.map((s) => `• ${s.name}`).join("\n")}
 
 === Soft Skills ===
-${profileData.softSkills.join(', ')}`
+${profileData.softSkills.join(", ")}`,
                 },
-                'contact.txt': {
-                  type: 'file',
+                "contact.txt": {
+                  type: "file",
                   content: `📧 Email: ${profileData.email}
 🎓 Carné: ${profileData.carne}
-🏫 Universidad del Valle de Guatemala`
+🏫 Universidad del Valle de Guatemala`,
                 },
-                'projects': {
-                  type: 'dir',
+                projects: {
+                  type: "dir",
                   children: {
-                    'README.md': {
-                      type: 'file',
+                    "README.md": {
+                      type: "file",
                       content: `# Proyectos
 Aquí encontrarás mis proyectos más destacados.
-Visita la ventana de Proyectos para más detalles.`
+Visita la ventana de Proyectos para más detalles.`,
                     },
-                    'portfolio': {
-                      type: 'dir',
+                    portfolio: {
+                      type: "dir",
                       children: {
-                        'info.txt': {
-                          type: 'file',
-                          content: 'Portfolio Ubuntu - Construido con Astro y TailwindCSS'
-                        }
-                      }
-                    }
-                  }
+                        "info.txt": {
+                          type: "file",
+                          content:
+                            "Portfolio Ubuntu - Construido con Astro y TailwindCSS",
+                        },
+                      },
+                    },
+                  },
                 },
-                'documents': {
-                  type: 'dir',
+                documents: {
+                  type: "dir",
                   children: {
-                    'cv.pdf': {
-                      type: 'file',
-                      content: '[Archivo PDF - Usa el visor de documentos para ver el CV]'
-                    }
-                  }
+                    "cv.pdf": {
+                      type: "file",
+                      content:
+                        "[Archivo PDF - Usa el visor de documentos para ver el CV]",
+                    },
+                  },
                 },
-                'downloads': {
-                  type: 'dir',
-                  children: {}
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                downloads: {
+                  type: "dir",
+                  children: {},
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   };
 
   // Helper: Get node from path
   function getNode(path) {
-    if (path === '/') return fileSystem['/'];
-    
-    const parts = path.split('/').filter(p => p);
-    let node = fileSystem['/'];
-    
+    if (path === "/") return fileSystem["/"];
+
+    const parts = path.split("/").filter((p) => p);
+    let node = fileSystem["/"];
+
     for (const part of parts) {
       if (!node.children || !node.children[part]) {
         return null;
@@ -136,36 +146,36 @@ Visita la ventana de Proyectos para más detalles.`
   // Helper: Resolve path (handle .., ., ~, relative paths)
   function resolvePath(pathArg) {
     let path = pathArg;
-    
+
     // Handle home shortcut
-    if (path === '~' || path.startsWith('~/')) {
-      path = '/home/guest' + path.slice(1);
+    if (path === "~" || path.startsWith("~/")) {
+      path = "/home/guest" + path.slice(1);
     }
-    
+
     // Handle absolute vs relative
-    if (!path.startsWith('/')) {
-      path = currentPath + '/' + path;
+    if (!path.startsWith("/")) {
+      path = currentPath + "/" + path;
     }
-    
+
     // Normalize path (resolve . and ..)
-    const parts = path.split('/').filter(p => p);
+    const parts = path.split("/").filter((p) => p);
     const resolved = [];
-    
+
     for (const part of parts) {
-      if (part === '..') {
+      if (part === "..") {
         resolved.pop();
-      } else if (part !== '.') {
+      } else if (part !== ".") {
         resolved.push(part);
       }
     }
-    
-    return '/' + resolved.join('/');
+
+    return "/" + resolved.join("/");
   }
 
   // Helper: Get display path (shorten /home/guest to ~)
   function getDisplayPath(path) {
-    if (path === '/home/guest') return '~';
-    if (path.startsWith('/home/guest/')) return '~' + path.slice(11);
+    if (path === "/home/guest") return "~";
+    if (path.startsWith("/home/guest/")) return "~" + path.slice(11);
     return path;
   }
 
@@ -175,7 +185,7 @@ Visita la ventana de Proyectos para más detalles.`
       promptElement.textContent = `guest@dpatzan:${getDisplayPath(currentPath)}$ `;
     }
   }
-  
+
   // Commands
   const commands = {
     help: () => `<span class="text-cyan-400">═══════════════════════════════════════════════════════════════</span>
@@ -219,118 +229,126 @@ Visita la ventana de Proyectos para más detalles.`
 
 <span class="text-cyan-400">═══════════════════════════════════════════════════════════════</span>
 <span class="text-gray-400">Tip: Usa las flechas ↑↓ para navegar el historial</span>`,
-    
-    whoami: () => 'guest',
-    
+
+    whoami: () => "guest",
+
     pwd: () => currentPath,
-    
+
     cd: (args) => {
-      const target = args && args.length > 0 ? args[0] : '~';
+      const target = args && args.length > 0 ? args[0] : "~";
       const newPath = resolvePath(target);
       const node = getNode(newPath);
-      
+
       if (!node) {
         return `<span class="text-red-400">cd: ${target}: No existe el directorio</span>`;
       }
-      if (node.type !== 'dir') {
+      if (node.type !== "dir") {
         return `<span class="text-red-400">cd: ${target}: No es un directorio</span>`;
       }
-      
-      currentPath = newPath || '/';
+
+      currentPath = newPath || "/";
       updatePrompt();
-      
+
       // Visual confirmation of directory change
       const displayPath = getDisplayPath(currentPath);
       const itemCount = Object.keys(node.children || {}).length;
-      return `<span class="text-cyan-400"> ${displayPath}</span> <span class="text-gray-500">(${itemCount} elemento${itemCount !== 1 ? 's' : ''})</span>`;
+      return `<span class="text-cyan-400"> ${displayPath}</span> <span class="text-gray-500">(${itemCount} elemento${itemCount !== 1 ? "s" : ""})</span>`;
     },
-    
+
     ls: (args) => {
-      const target = args && args.length > 0 ? resolvePath(args[0]) : currentPath;
+      const target =
+        args && args.length > 0 ? resolvePath(args[0]) : currentPath;
       const node = getNode(target);
-      
+
       if (!node) {
         return `<span class="text-red-400">ls: ${args[0]}: No existe el directorio</span>`;
       }
-      if (node.type !== 'dir') {
+      if (node.type !== "dir") {
         return `<span class="text-white">${args[0]}</span>`;
       }
-      
+
       const entries = Object.keys(node.children || {});
       if (entries.length === 0) {
         return '<span class="text-gray-500">(directorio vacío)</span>';
       }
-      
-      return entries.map(name => {
-        const child = node.children[name];
-        if (child.type === 'dir') {
-          return `<span class="text-blue-400">${name}/</span>`;
-        }
-        return `<span class="text-white">${name}</span>`;
-      }).join('  ');
+
+      return entries
+        .map((name) => {
+          const child = node.children[name];
+          if (child.type === "dir") {
+            return `<span class="text-blue-400">${name}/</span>`;
+          }
+          return `<span class="text-white">${name}</span>`;
+        })
+        .join("  ");
     },
 
     tree: (args) => {
-      const target = args && args.length > 0 ? resolvePath(args[0]) : currentPath;
+      const target =
+        args && args.length > 0 ? resolvePath(args[0]) : currentPath;
       const node = getNode(target);
-      
-      if (!node || node.type !== 'dir') {
+
+      if (!node || node.type !== "dir") {
         return `<span class="text-red-400">tree: No se puede mostrar árbol</span>`;
       }
-      
+
       let output = `<span class="text-blue-400">${getDisplayPath(target)}</span>\n`;
-      
-      function buildTree(node, prefix = '') {
+
+      function buildTree(node, prefix = "") {
         const entries = Object.keys(node.children || {});
         entries.forEach((name, index) => {
           const isLast = index === entries.length - 1;
           const child = node.children[name];
-          const connector = isLast ? '└── ' : '├── ';
-          const color = child.type === 'dir' ? 'text-blue-400' : 'text-white';
-          output += prefix + connector + `<span class="${color}">${name}${child.type === 'dir' ? '/' : ''}</span>\n`;
-          
-          if (child.type === 'dir') {
-            buildTree(child, prefix + (isLast ? '    ' : '│   '));
+          const connector = isLast ? "└── " : "├── ";
+          const color = child.type === "dir" ? "text-blue-400" : "text-white";
+          output +=
+            prefix +
+            connector +
+            `<span class="${color}">${name}${child.type === "dir" ? "/" : ""}</span>\n`;
+
+          if (child.type === "dir") {
+            buildTree(child, prefix + (isLast ? "    " : "│   "));
           }
         });
       }
-      
+
       buildTree(node);
       return output;
     },
-    
+
     cat: (args) => {
       if (!args || args.length === 0) {
         return '<span class="text-red-400">cat: falta el operando archivo</span>';
       }
-      
+
       const target = resolvePath(args[0]);
       const node = getNode(target);
-      
+
       if (!node) {
         return `<span class="text-red-400">cat: ${args[0]}: No existe el archivo o directorio</span>`;
       }
-      if (node.type === 'dir') {
+      if (node.type === "dir") {
         return `<span class="text-red-400">cat: ${args[0]}: Es un directorio</span>`;
       }
-      
+
       return node.content;
     },
-    
+
     clear: () => {
-      output.innerHTML = '';
+      output.innerHTML = "";
       return null;
     },
-    
-    date: () => new Date().toLocaleString('es-GT', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }),
+
+    date: () =>
+      new Date().toLocaleString("es-GT", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
 
     uptime: () => {
       const days = Math.floor(Math.random() * 365) + 1;
@@ -341,19 +359,19 @@ Visita la ventana de Proyectos para más detalles.`
     },
 
     uname: (args) => {
-      if (args && args[0] === '-a') {
-        return 'Linux dpatzan-portfolio 6.5.0-astro #1 SMP PREEMPT_DYNAMIC Web x86_64 GNU/Linux';
+      if (args && args[0] === "-a") {
+        return "Linux dpatzan-portfolio 6.5.0-astro #1 SMP PREEMPT_DYNAMIC Web x86_64 GNU/Linux";
       }
-      return 'Linux';
+      return "Linux";
     },
 
     weather: () => {
       const conditions = [
-        { icon: '☀️', desc: 'Soleado', temp: '28°C' },
-        { icon: '🌤️', desc: 'Parcialmente nublado', temp: '24°C' },
-        { icon: '⛅', desc: 'Nublado', temp: '22°C' },
-        { icon: '🌧️', desc: 'Lluvia ligera', temp: '18°C' },
-        { icon: '⛈️', desc: 'Tormenta', temp: '16°C' }
+        { icon: "☀️", desc: "Soleado", temp: "28°C" },
+        { icon: "🌤️", desc: "Parcialmente nublado", temp: "24°C" },
+        { icon: "⛅", desc: "Nublado", temp: "22°C" },
+        { icon: "🌧️", desc: "Lluvia ligera", temp: "18°C" },
+        { icon: "⛈️", desc: "Tormenta", temp: "16°C" },
       ];
       const w = conditions[Math.floor(Math.random() * conditions.length)];
       return `<span class="text-cyan-400">
@@ -378,8 +396,8 @@ Visita la ventana de Proyectos para más detalles.`
 ║                                                           ║ 
 ╚═══════════════════════════════════════════════════════════╝
 </span>`,
-    
-    echo: (args) => args ? args.join(' ') : '',
+
+    echo: (args) => (args ? args.join(" ") : ""),
 
     fortune: () => {
       const fortunes = [
@@ -394,17 +412,20 @@ Visita la ventana de Proyectos para más detalles.`
         '"La simplicidad es la sofisticación definitiva." - Leonardo da Vinci',
         '"Los programadores no mueren, solo pierden su memoria." - Anónimo',
         '"Un buen programador es aquel que mira a ambos lados antes de cruzar una calle de un solo sentido." - Doug Linder',
-        '"Si depurar es el proceso de eliminar bugs, entonces programar es el proceso de crearlos." - Edsger Dijkstra'
+        '"Si depurar es el proceso de eliminar bugs, entonces programar es el proceso de crearlos." - Edsger Dijkstra',
       ];
       const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
       return `<span class="text-yellow-400"> ${fortune}</span>`;
     },
 
     cowsay: (args) => {
-      const message = args && args.length > 0 ? args.join(' ') : 'Moo! Hola desde el portfolio!';
+      const message =
+        args && args.length > 0
+          ? args.join(" ")
+          : "Moo! Hola desde el portfolio!";
       const msgLen = message.length;
-      const border = '_'.repeat(msgLen + 2);
-      const borderBottom = '-'.repeat(msgLen + 2);
+      const border = "_".repeat(msgLen + 2);
+      const borderBottom = "-".repeat(msgLen + 2);
       return `<span class="text-white"> ${border}
 < ${message} >
  ${borderBottom}
@@ -417,14 +438,38 @@ Visita la ventana de Proyectos para más detalles.`
 
     joke: () => {
       const jokes = [
-        { q: '¿Por qué los programadores prefieren el frío?', a: 'Porque odian los bugs (insectos)!' },
-        { q: '¿Cuántos programadores se necesitan para cambiar una bombilla?', a: 'Ninguno, es un problema de hardware.' },
-        { q: '¿Por qué Java desarrolló depresión?', a: 'Porque no tiene amigos, solo clases.' },
-        { q: '¿Qué hace un programador cuando tiene hambre?', a: 'return comida;' },
-        { q: '¿Por qué los programadores confunden Halloween con Navidad?', a: 'Porque OCT 31 = DEC 25 ' },
-        { q: '¿Cuál es la ciudad favorita de los programadores?', a: 'GitHub City ' },
-        { q: '¿Por qué el desarrollador se fue a la oscuridad?', a: 'Porque tenía miedo de la luz (modo) ' },
-        { q: 'Un SQL entra a un bar, se acerca a dos mesas y pregunta...', a: '"¿Puedo unirme?" (JOIN) ' }
+        {
+          q: "¿Por qué los programadores prefieren el frío?",
+          a: "Porque odian los bugs (insectos)!",
+        },
+        {
+          q: "¿Cuántos programadores se necesitan para cambiar una bombilla?",
+          a: "Ninguno, es un problema de hardware.",
+        },
+        {
+          q: "¿Por qué Java desarrolló depresión?",
+          a: "Porque no tiene amigos, solo clases.",
+        },
+        {
+          q: "¿Qué hace un programador cuando tiene hambre?",
+          a: "return comida;",
+        },
+        {
+          q: "¿Por qué los programadores confunden Halloween con Navidad?",
+          a: "Porque OCT 31 = DEC 25 ",
+        },
+        {
+          q: "¿Cuál es la ciudad favorita de los programadores?",
+          a: "GitHub City ",
+        },
+        {
+          q: "¿Por qué el desarrollador se fue a la oscuridad?",
+          a: "Porque tenía miedo de la luz (modo) ",
+        },
+        {
+          q: "Un SQL entra a un bar, se acerca a dos mesas y pregunta...",
+          a: '"¿Puedo unirme?" (JOIN) ',
+        },
       ];
       const joke = jokes[Math.floor(Math.random() * jokes.length)];
       return `<span class="text-green-400"> ${joke.q}</span>
@@ -432,33 +477,173 @@ Visita la ventana de Proyectos para más detalles.`
     },
 
     matrix: () => {
-      // Start matrix effect
-      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
-      let matrixInterval;
-      let count = 0;
-      
-      const createMatrixLine = () => {
-        const line = document.createElement('div');
-        line.className = 'text-green-400';
-        let text = '';
-        for (let i = 0; i < 60; i++) {
-          text += chars[Math.floor(Math.random() * chars.length)];
+      // Matrix Digital Rain Effect - Terminal Only
+      const chars =
+        "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン日月火水木金土0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      // Get terminal output dimensions
+      const terminalRect = output.getBoundingClientRect();
+
+      // Create overlay inside terminal
+      const matrixOverlay = document.createElement("div");
+      matrixOverlay.id = "matrix-overlay";
+      matrixOverlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 100;
+        overflow: hidden;
+        cursor: pointer;
+      `;
+
+      // Position relative to output
+      output.style.position = "relative";
+      output.appendChild(matrixOverlay);
+
+      // Create canvas for the rain effect
+      const canvas = document.createElement("canvas");
+      canvas.width = terminalRect.width;
+      canvas.height = terminalRect.height;
+      canvas.style.display = "block";
+      matrixOverlay.appendChild(canvas);
+
+      const ctx = canvas.getContext("2d");
+      const fontSize = 14;
+      const columns = Math.floor(canvas.width / fontSize);
+
+      // Array to track y position of each column
+      const drops = [];
+      for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * -50;
+      }
+
+      // Track speed for each column
+      const speeds = [];
+      for (let i = 0; i < columns; i++) {
+        speeds[i] = 0.4 + Math.random() * 0.6;
+      }
+
+      let frameCount = 0;
+      const maxFrames = 350; // ~7 seconds
+      let animationId;
+
+      const drawMatrix = () => {
+        // Semi-transparent black to create trail effect
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < drops.length; i++) {
+          const char = chars[Math.floor(Math.random() * chars.length)];
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          if (drops[i] > 0 && y < canvas.height) {
+            // Bright head
+            ctx.fillStyle = "#aaffaa";
+            ctx.font = `bold ${fontSize}px monospace`;
+            ctx.fillText(char, x, y);
+
+            // Slightly dimmer
+            ctx.fillStyle = "#00ff00";
+            ctx.font = `${fontSize}px monospace`;
+            if (y - fontSize > 0) {
+              ctx.fillText(
+                chars[Math.floor(Math.random() * chars.length)],
+                x,
+                y - fontSize,
+              );
+            }
+
+            // Trail
+            ctx.fillStyle = "#008800";
+            for (let j = 2; j < 6; j++) {
+              if (y - j * fontSize > 0) {
+                ctx.fillText(
+                  chars[Math.floor(Math.random() * chars.length)],
+                  x,
+                  y - j * fontSize,
+                );
+              }
+            }
+
+            // Dimmer trail
+            ctx.fillStyle = "#004400";
+            for (let j = 6; j < 12; j++) {
+              if (y - j * fontSize > 0 && Math.random() > 0.4) {
+                ctx.fillText(
+                  chars[Math.floor(Math.random() * chars.length)],
+                  x,
+                  y - j * fontSize,
+                );
+              }
+            }
+          }
+
+          drops[i] += speeds[i];
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
+            drops[i] = 0;
+            speeds[i] = 0.4 + Math.random() * 0.6;
+          }
         }
-        line.textContent = text;
-        output.appendChild(line);
-        output.scrollTop = output.scrollHeight;
+
+        // Random glowing characters
+        for (let g = 0; g < 2; g++) {
+          const gx = Math.floor(Math.random() * columns) * fontSize;
+          const gy =
+            Math.floor(Math.random() * (canvas.height / fontSize)) * fontSize;
+          ctx.fillStyle = "#ffffff";
+          ctx.font = `bold ${fontSize}px monospace`;
+          ctx.fillText(chars[Math.floor(Math.random() * chars.length)], gx, gy);
+        }
+
+        frameCount++;
+
+        if (frameCount < maxFrames) {
+          animationId = requestAnimationFrame(drawMatrix);
+        } else {
+          // Show message
+          ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = "#00ff00";
+          ctx.font = "bold 16px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "Wake up, Neo...",
+            canvas.width / 2,
+            canvas.height / 2 - 15,
+          );
+          ctx.fillText(
+            "The Matrix has you...",
+            canvas.width / 2,
+            canvas.height / 2 + 15,
+          );
+
+          setTimeout(() => {
+            matrixOverlay.remove();
+            addOutput(
+              '<span class="text-green-400"> Knock, knock, Neo.</span>',
+            );
+          }, 2000);
+        }
       };
-      
-      matrixInterval = setInterval(() => {
-        createMatrixLine();
-        count++;
-        if (count > 30) {
-          clearInterval(matrixInterval);
-          addOutput('<span class="text-cyan-400">Wake up, Neo... La Matrix te tiene.</span>');
-        }
-      }, 150);
-      
-      return '<span class="text-green-400"> Iniciando Matrix...</span>';
+
+      drawMatrix();
+
+      // Click to exit
+      matrixOverlay.addEventListener("click", () => {
+        cancelAnimationFrame(animationId);
+        matrixOverlay.remove();
+        addOutput(
+          '<span class="text-cyan-400">Matrix interrupted. Reality restored.</span>',
+        );
+      });
+
+      return '<span class="text-green-400"> Entering the Matrix... (click to exit)</span>';
     },
 
     sl: () => {
@@ -479,55 +664,64 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
     },
 
     figlet: (args) => {
-      const text = args && args.length > 0 ? args.join(' ').toUpperCase() : 'HELLO';
+      const text =
+        args && args.length > 0 ? args.join(" ").toUpperCase() : "HELLO";
       const letters = {
-        'A': ['  █  ', ' █ █ ', '█████', '█   █', '█   █'],
-        'B': ['████ ', '█   █', '████ ', '█   █', '████ '],
-        'C': [' ████', '█    ', '█    ', '█    ', ' ████'],
-        'D': ['████ ', '█   █', '█   █', '█   █', '████ '],
-        'E': ['█████', '█    ', '████ ', '█    ', '█████'],
-        'F': ['█████', '█    ', '████ ', '█    ', '█    '],
-        'G': [' ████', '█    ', '█  ██', '█   █', ' ████'],
-        'H': ['█   █', '█   █', '█████', '█   █', '█   █'],
-        'I': ['█████', '  █  ', '  █  ', '  █  ', '█████'],
-        'J': ['█████', '   █ ', '   █ ', '█  █ ', ' ██  '],
-        'K': ['█   █', '█  █ ', '███  ', '█  █ ', '█   █'],
-        'L': ['█    ', '█    ', '█    ', '█    ', '█████'],
-        'M': ['█   █', '██ ██', '█ █ █', '█   █', '█   █'],
-        'N': ['█   █', '██  █', '█ █ █', '█  ██', '█   █'],
-        'O': [' ███ ', '█   █', '█   █', '█   █', ' ███ '],
-        'P': ['████ ', '█   █', '████ ', '█    ', '█    '],
-        'Q': [' ███ ', '█   █', '█ █ █', '█  █ ', ' ██ █'],
-        'R': ['████ ', '█   █', '████ ', '█  █ ', '█   █'],
-        'S': [' ████', '█    ', ' ███ ', '    █', '████ '],
-        'T': ['█████', '  █  ', '  █  ', '  █  ', '  █  '],
-        'U': ['█   █', '█   █', '█   █', '█   █', ' ███ '],
-        'V': ['█   █', '█   █', '█   █', ' █ █ ', '  █  '],
-        'W': ['█   █', '█   █', '█ █ █', '██ ██', '█   █'],
-        'X': ['█   █', ' █ █ ', '  █  ', ' █ █ ', '█   █'],
-        'Y': ['█   █', ' █ █ ', '  █  ', '  █  ', '  █  '],
-        'Z': ['█████', '   █ ', '  █  ', ' █   ', '█████'],
-        ' ': ['     ', '     ', '     ', '     ', '     '],
-        '!': ['  █  ', '  █  ', '  █  ', '     ', '  █  '],
-        '?': [' ███ ', '█   █', '  ██ ', '     ', '  █  '],
+        A: ["  █  ", " █ █ ", "█████", "█   █", "█   █"],
+        B: ["████ ", "█   █", "████ ", "█   █", "████ "],
+        C: [" ████", "█    ", "█    ", "█    ", " ████"],
+        D: ["████ ", "█   █", "█   █", "█   █", "████ "],
+        E: ["█████", "█    ", "████ ", "█    ", "█████"],
+        F: ["█████", "█    ", "████ ", "█    ", "█    "],
+        G: [" ████", "█    ", "█  ██", "█   █", " ████"],
+        H: ["█   █", "█   █", "█████", "█   █", "█   █"],
+        I: ["█████", "  █  ", "  █  ", "  █  ", "█████"],
+        J: ["█████", "   █ ", "   █ ", "█  █ ", " ██  "],
+        K: ["█   █", "█  █ ", "███  ", "█  █ ", "█   █"],
+        L: ["█    ", "█    ", "█    ", "█    ", "█████"],
+        M: ["█   █", "██ ██", "█ █ █", "█   █", "█   █"],
+        N: ["█   █", "██  █", "█ █ █", "█  ██", "█   █"],
+        O: [" ███ ", "█   █", "█   █", "█   █", " ███ "],
+        P: ["████ ", "█   █", "████ ", "█    ", "█    "],
+        Q: [" ███ ", "█   █", "█ █ █", "█  █ ", " ██ █"],
+        R: ["████ ", "█   █", "████ ", "█  █ ", "█   █"],
+        S: [" ████", "█    ", " ███ ", "    █", "████ "],
+        T: ["█████", "  █  ", "  █  ", "  █  ", "  █  "],
+        U: ["█   █", "█   █", "█   █", "█   █", " ███ "],
+        V: ["█   █", "█   █", "█   █", " █ █ ", "  █  "],
+        W: ["█   █", "█   █", "█ █ █", "██ ██", "█   █"],
+        X: ["█   █", " █ █ ", "  █  ", " █ █ ", "█   █"],
+        Y: ["█   █", " █ █ ", "  █  ", "  █  ", "  █  "],
+        Z: ["█████", "   █ ", "  █  ", " █   ", "█████"],
+        " ": ["     ", "     ", "     ", "     ", "     "],
+        "!": ["  █  ", "  █  ", "  █  ", "     ", "  █  "],
+        "?": [" ███ ", "█   █", "  ██ ", "     ", "  █  "],
       };
-      
-      let result = ['', '', '', '', ''];
+
+      let result = ["", "", "", "", ""];
       for (const char of text.slice(0, 10)) {
-        const letter = letters[char] || letters[' '];
+        const letter = letters[char] || letters[" "];
         for (let i = 0; i < 5; i++) {
-          result[i] += letter[i] + ' ';
+          result[i] += letter[i] + " ";
         }
       }
-      
-      return `<span class="text-[#E95420]">${result.join('\n')}</span>`;
+
+      return `<span class="text-[#E95420]">${result.join("\n")}</span>`;
     },
 
     lolcat: (args) => {
-      const text = args && args.length > 0 ? args.join(' ') : 'Rainbow Text!';
-      const colors = ['text-red-400', 'text-orange-400', 'text-yellow-400', 'text-green-400', 'text-cyan-400', 'text-blue-400', 'text-purple-400'];
-      
-      let result = '';
+      const text = args && args.length > 0 ? args.join(" ") : "Rainbow Text!";
+      const colors = [
+        "text-red-400",
+        "text-orange-400",
+        "text-yellow-400",
+        "text-green-400",
+        "text-cyan-400",
+        "text-blue-400",
+        "text-purple-400",
+      ];
+
+      let result = "";
       for (let i = 0; i < text.length; i++) {
         const color = colors[i % colors.length];
         result += `<span class="${color}">${text[i]}</span>`;
@@ -540,9 +734,9 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
         return '<span class="text-gray-400">Uso: calc [expresión]  Ejemplo: calc 2+2*3</span>';
       }
       try {
-        const expr = args.join('').replace(/[^0-9+\-*/().]/g, '');
-        const result = Function('"use strict"; return (' + expr + ')')();
-        return `<span class="text-green-400"> ${args.join(' ')} = ${result}</span>`;
+        const expr = args.join("").replace(/[^0-9+\-*/().]/g, "");
+        const result = Function('"use strict"; return (' + expr + ")")();
+        return `<span class="text-green-400"> ${args.join(" ")} = ${result}</span>`;
       } catch (e) {
         return '<span class="text-red-400">Error: Expresión inválida</span>';
       }
@@ -553,15 +747,19 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
         return '<span class="text-gray-400">Uso: man [comando]</span>';
       }
       const manuals = {
-        ls: 'ls - lista el contenido del directorio\n\nUSO: ls [directorio]\n\nLista información sobre los archivos y directorios.',
-        cd: 'cd - cambia el directorio de trabajo\n\nUSO: cd [directorio]\n\nCambia el directorio actual al especificado. Usa ~ para ir al home.',
-        cat: 'cat - concatena y muestra archivos\n\nUSO: cat [archivo]\n\nMuestra el contenido de un archivo de texto.',
-        cowsay: 'cowsay - genera una vaca ASCII que habla\n\nUSO: cowsay [mensaje]\n\nMuestra una vaca diciendo el mensaje proporcionado.',
-        fortune: 'fortune - muestra una frase aleatoria\n\nUSO: fortune\n\nMuestra frases de programación aleatorias.',
-        matrix: 'matrix - efecto Matrix\n\nUSO: matrix\n\nMuestra el efecto de lluvia de caracteres de Matrix.',
-        figlet: 'figlet - texto ASCII art\n\nUSO: figlet [texto]\n\nConvierte texto a arte ASCII.'
+        ls: "ls - lista el contenido del directorio\n\nUSO: ls [directorio]\n\nLista información sobre los archivos y directorios.",
+        cd: "cd - cambia el directorio de trabajo\n\nUSO: cd [directorio]\n\nCambia el directorio actual al especificado. Usa ~ para ir al home.",
+        cat: "cat - concatena y muestra archivos\n\nUSO: cat [archivo]\n\nMuestra el contenido de un archivo de texto.",
+        cowsay:
+          "cowsay - genera una vaca ASCII que habla\n\nUSO: cowsay [mensaje]\n\nMuestra una vaca diciendo el mensaje proporcionado.",
+        fortune:
+          "fortune - muestra una frase aleatoria\n\nUSO: fortune\n\nMuestra frases de programación aleatorias.",
+        matrix:
+          "matrix - efecto Matrix\n\nUSO: matrix\n\nMuestra el efecto de lluvia de caracteres de Matrix.",
+        figlet:
+          "figlet - texto ASCII art\n\nUSO: figlet [texto]\n\nConvierte texto a arte ASCII.",
       };
-      
+
       const cmd = args[0].toLowerCase();
       if (manuals[cmd]) {
         return `<span class="text-yellow-400">${manuals[cmd]}</span>`;
@@ -571,11 +769,11 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 
     hola: () => {
       const hour = new Date().getHours();
-      let greeting = '';
-      if (hour < 12) greeting = '¡Buenos días! ';
-      else if (hour < 18) greeting = '¡Buenas tardes! ';
-      else greeting = '¡Buenas noches! ';
-      
+      let greeting = "";
+      if (hour < 12) greeting = "¡Buenos días! ";
+      else if (hour < 18) greeting = "¡Buenas tardes! ";
+      else greeting = "¡Buenas noches! ";
+
       return `<span class="text-cyan-400">${greeting}</span>
 <span class="text-white">Soy Diego Patzán, desarrollador web en continuo aprendizaje.</span>
 <span class="text-gray-400">Gracias por visitar mi portfolio. </span>`;
@@ -600,8 +798,9 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 </span>
 <span class="text-white">¡Hora de un café! El combustible de todo programador.</span>`;
     },
-    
-    neofetch: () => `<span class="text-[#E95420]">       _,met$$$$$gg.           </span><span class="text-white">guest@dpatzan</span>
+
+    neofetch:
+      () => `<span class="text-[#E95420]">       _,met$$$$$gg.           </span><span class="text-white">guest@dpatzan</span>
 <span class="text-[#E95420]">    ,g$$$$$$$$$$$$$$$P.        </span><span class="text-white">--------------</span>
 <span class="text-[#E95420]">  ,g$$P""       """Y$$.".      </span><span class="text-[#E95420]">OS:</span> Ubuntu Portfolio 24.04 LTS
 <span class="text-[#E95420]"> ,$$P'              \`$$$.     </span><span class="text-[#E95420]">Host:</span> ${profileData.name}
@@ -617,46 +816,56 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 <span class="text-[#E95420]">     \`$$b.                    </span>
 <span class="text-[#E95420]">       \`Y$$b.                 </span>
 <span class="text-[#E95420]">          \`"Y$b._             </span>`,
-    
+
     history: () => {
-      if (commandHistory.length === 0) return 'Historial vacío';
-      return commandHistory.map((cmd, i) => `  ${i + 1}  ${cmd}`).join('\n');
+      if (commandHistory.length === 0) return "Historial vacío";
+      return commandHistory.map((cmd, i) => `  ${i + 1}  ${cmd}`).join("\n");
     },
-    
+
     mkdir: (args) => {
       if (!args || args.length === 0) {
         return '<span class="text-red-400">mkdir: falta el operando</span>';
       }
       return `<span class="text-yellow-400">mkdir: Operación no permitida - Este portfolio es de solo lectura</span>`;
     },
-    
+
     touch: (args) => {
       return `<span class="text-yellow-400">touch: Operación no permitida - Este portfolio es de solo lectura</span>`;
     },
-    
+
     sudo: (args) => {
-      if (args && args.length > 0 && args[0] === 'rm' && args.includes('-rf') && args.includes('/')) {
+      if (
+        args &&
+        args.length > 0 &&
+        args[0] === "rm" &&
+        args.includes("-rf") &&
+        args.includes("/")
+      ) {
         return `<span class="text-red-400"> ¡ALTO AHÍ! No destruyas mi portfolio </span>`;
       }
       return `<span class="text-red-400">sudo: No tienes permisos de superusuario en este portfolio 
 <span class="text-gray-400">Pero si quieres, puedes contactarme para colaborar!</span></span>`;
     },
-    
+
     rm: (args) => {
-      if (args && args.includes('-rf')) {
+      if (args && args.includes("-rf")) {
         return `<span class="text-red-400"> ¡Hey! Este portfolio tiene protección anti-destrucción activada.</span>`;
       }
       return `<span class="text-red-400">rm: Operación no permitida - Este portfolio es de solo lectura</span>`;
     },
-    
+
     exit: () => {
-      addOutput('<span class="text-yellow-400">¡Hasta pronto! Cierra la ventana para salir.</span>');
+      addOutput(
+        '<span class="text-yellow-400">¡Hasta pronto! Cierra la ventana para salir.</span>',
+      );
       return null;
     },
 
-    vim: () => '<span class="text-yellow-400">vim: ¿Cómo salir de vim?  Pista: :q! (Es broma, no hay vim aquí)</span>',
-    
-    nano: () => '<span class="text-gray-400">nano: Editor no disponible. Este portfolio es de solo lectura.</span>',
+    vim: () =>
+      '<span class="text-yellow-400">vim: ¿Cómo salir de vim?  Pista: :q! (Es broma, no hay vim aquí)</span>',
+
+    nano: () =>
+      '<span class="text-gray-400">nano: Editor no disponible. Este portfolio es de solo lectura.</span>',
 
     ping: (args) => {
       if (!args || args.length === 0) {
@@ -674,13 +883,13 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
       if (!args || args.length === 0) {
         return '<span class="text-gray-400">Git está disponible. Comandos: git status, git log</span>';
       }
-      if (args[0] === 'status') {
+      if (args[0] === "status") {
         return `<span class="text-green-400">En rama main
 Tu rama está actualizada con 'origin/main'.
 
 nada para hacer commit, el árbol de trabajo está limpio</span>`;
       }
-      if (args[0] === 'log') {
+      if (args[0] === "log") {
         return `<span class="text-yellow-400">commit a1b2c3d4e5f6...</span>
 Author: Diego Patzán <df.patzan@gmail.com>
 Date:   ${new Date().toDateString()}
@@ -691,42 +900,45 @@ Date:   ${new Date().toDateString()}
     },
 
     npm: (args) => {
-      if (args && args[0] === 'install') {
+      if (args && args[0] === "install") {
         return `<span class="text-yellow-400"> Instalando paquetes...</span>
 added 1337 packages in 3.14s
 <span class="text-green-400"> ¡Instalación completada!</span>`;
       }
       return '<span class="text-gray-400">npm: gestor de paquetes de Node.js</span>';
-    }
+    },
   };
-  
+
   // Add output line
   function addOutput(html, isCommand = false) {
     if (html === null) return;
-    const div = document.createElement('div');
-    div.className = isCommand ? 'text-white mb-1' : 'mb-2 whitespace-pre-wrap';
+    const div = document.createElement("div");
+    div.className = isCommand ? "text-white mb-1" : "mb-2 whitespace-pre-wrap";
     div.innerHTML = html;
     output.appendChild(div);
     output.scrollTop = output.scrollHeight;
   }
-  
+
   // Process command
   function processCommand(cmdLine) {
     const trimmed = cmdLine.trim();
     if (!trimmed) return;
-    
+
     // Add to history
     commandHistory.push(trimmed);
     historyIndex = commandHistory.length;
-    
+
     // Show command with current path
-    addOutput(`<span class="text-green-400">guest@dpatzan:${getDisplayPath(currentPath)}$</span> ${trimmed}`, true);
-    
+    addOutput(
+      `<span class="text-green-400">guest@dpatzan:${getDisplayPath(currentPath)}$</span> ${trimmed}`,
+      true,
+    );
+
     // Parse command
     const parts = trimmed.split(/\s+/);
     const cmd = parts[0].toLowerCase();
     const args = parts.slice(1);
-    
+
     // Execute
     if (commands[cmd]) {
       const result = commands[cmd](args);
@@ -734,69 +946,73 @@ added 1337 packages in 3.14s
         addOutput(result);
       }
     } else {
-      addOutput(`<span class="text-red-400">${cmd}: comando no encontrado. Escribe 'help' para ver comandos disponibles.</span>`);
+      addOutput(
+        `<span class="text-red-400">${cmd}: comando no encontrado. Escribe 'help' para ver comandos disponibles.</span>`,
+      );
     }
   }
-  
+
   // Event listeners
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
       processCommand(input.value);
-      input.value = '';
-    } else if (e.key === 'ArrowUp') {
+      input.value = "";
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (historyIndex > 0) {
         historyIndex--;
         input.value = commandHistory[historyIndex];
       }
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
         historyIndex++;
         input.value = commandHistory[historyIndex];
       } else {
         historyIndex = commandHistory.length;
-        input.value = '';
+        input.value = "";
       }
-    } else if (e.key === 'l' && e.ctrlKey) {
+    } else if (e.key === "l" && e.ctrlKey) {
       e.preventDefault();
       commands.clear();
     }
   });
-  
+
   // Focus input when clicking on terminal
-  document.querySelector('.terminal-container').addEventListener('click', () => {
-    input.focus();
-  });
+  document
+    .querySelector(".terminal-container")
+    .addEventListener("click", () => {
+      input.focus();
+    });
 </script>
 
 <style>
   .terminal-container {
-    font-family: 'Ubuntu Mono', 'Fira Code', 'Consolas', monospace;
+    font-family: "Ubuntu Mono", "Fira Code", "Consolas", monospace;
   }
-  
+
   #terminal-output::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   #terminal-output::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.2);
   }
-  
+
   #terminal-output::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
   }
-  
+
   #terminal-output::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
   }
-  
+
   pre {
     font-size: 10px;
     line-height: 1.2;
   }
-  
+
   @media (min-width: 768px) {
     pre {
       font-size: 12px;
